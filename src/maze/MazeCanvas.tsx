@@ -10,7 +10,7 @@ type MazeProps = {
     presenter: MazePresenter,
 }
 
-function Maze({ presenter }: MazeProps) {
+export function MazeCanvas({ presenter }: MazeProps) {
     const { canvasSize, size, cells } = presenter;
     const cellSize = Math.floor(canvasSize / size);
 
@@ -28,32 +28,37 @@ function Maze({ presenter }: MazeProps) {
         ctx.fillStyle = '#111';
         ctx.fillRect(0, 0, canvasSize, canvasSize);
 
+        const middle = Math.floor(size / 2) * cellSize;
+        ctx.fillStyle = '#AA0077';
+        ctx.fillRect(middle, middle, cellSize, cellSize);
+
         ctx.strokeStyle = '#AAA';
         ctx.lineWidth = 4;
         ctx.strokeRect(0, 0, canvasSize, canvasSize);
 
         ctx.lineWidth = 2;
-        cells.forEach(cell => {
-            const x = cell.x * cellSize;
-            const y = cell.y * cellSize;
-            const tl = { x, y };
-            const tr = { x: x + cellSize, y };
-            const bl = { x, y: y + cellSize };
-            const br = { x: x + cellSize, y: y + cellSize };
-            if (cell.walls[0]) {
-                drawLine(ctx, tl, bl);
-            }
-            if (cell.walls[1]) {
-                drawLine(ctx, tl, tr);
-            }
-            if (cell.walls[2]) {
-                drawLine(ctx, tr, br);
-            }
-            if (cell.walls[3]) {
-                drawLine(ctx, bl, br);
-            }
+        cells.forEach(row => {
+            row.forEach(cell => {
+                const x = cell.x * cellSize;
+                const y = cell.y * cellSize;
+                const tl = { x, y };
+                const tr = { x: x + cellSize, y };
+                const bl = { x, y: y + cellSize };
+                const br = { x: x + cellSize, y: y + cellSize };
+                if (cell.walls[0]) {
+                    drawLine(ctx, tl, bl);
+                }
+                if (cell.walls[1]) {
+                    drawLine(ctx, tl, tr);
+                }
+                if (cell.walls[2]) {
+                    drawLine(ctx, tr, br);
+                }
+                if (cell.walls[3]) {
+                    drawLine(ctx, bl, br);
+                }
+            })
         })
-
     }, [])
 
     return (
@@ -68,4 +73,4 @@ function drawLine(ctx: CanvasRenderingContext2D, from: Point, to: Point) {
     ctx.stroke();
 }
 
-export default Maze
+export default MazeCanvas
