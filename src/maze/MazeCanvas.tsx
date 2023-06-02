@@ -28,9 +28,9 @@ export function MazeCanvas({ presenter }: MazeProps) {
         ctx.fillStyle = '#111';
         ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-        const middle = Math.floor(size / 2) * cellSize;
-        ctx.fillStyle = '#AA0077';
-        ctx.fillRect(middle, middle, cellSize, cellSize);
+        // const middle = Math.floor(size / 2) * cellSize;
+        // ctx.fillStyle = '#AA0077';
+        // ctx.fillRect(middle, middle, cellSize, cellSize);
 
         ctx.strokeStyle = '#AAA';
         ctx.lineWidth = 4;

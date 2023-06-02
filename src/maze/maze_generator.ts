@@ -12,19 +12,11 @@ export class MazeGenerator {
     /**
      * 
      * @param seed  number used for maze randomization
-     * @param size  length of the side of the square grid, odd numbers yield
-     *              the best results
-     * @param start start point of the maze - surrounded by walls from 3 sides
-     * @param end   end point of the maze - surrounded by walls from 3 sides
+     * @param size  length of the side of the square grid
      * @returns     a [size x size] maze with starting point at top-left corner
      *              and end point in the middle
      */
-    generate({ seed, size, start, end }: {
-        seed: number,
-        size: number,
-        start: Point,
-        end: Point
-    }): Maze {
+    generate({ seed, size }: { seed: number, size: number }): Maze {
         const nextInt = this.randomIntGenerator(seed);
 
         const cells = this.getStartingGrid(size);
@@ -32,7 +24,7 @@ export class MazeGenerator {
         // Add cells to this stack whenever we are at a junction.
         const stack = new Array<BuildingCell>();
         let unvisitedCells = size * size;
-        let current = cells[start.y][start.x];
+        let current = cells[0][0];
 
         while (unvisitedCells > 0) {
             if (!current.visisted) {
@@ -44,7 +36,7 @@ export class MazeGenerator {
 
             // If there are no unvisited neighbours it means we reached a dead
             // end. Time to revisit some of the previously saved junctions.
-            if (!neighbours.length || isSamePoint(current, end)) {
+            if (!neighbours.length) {
                 if (stack.length) {
                     current = stack.pop()!;
                     continue;
@@ -57,8 +49,7 @@ export class MazeGenerator {
 
             // If there are some neighbours we haven't visited yet we save this
             // junction to revisit later.
-            if (neighbours.length > 1
-                && !isSamePoint(current, start)) {
+            if (neighbours.length > 1) {
                 stack.push(current);
             }
 
@@ -66,7 +57,7 @@ export class MazeGenerator {
             current = next;
         }
 
-        return { cells, size, start, end };
+        return { cells, size, exits: [] };
     }
 
     // Generates a grid [size x size] with each cell surrounded by walls.
@@ -111,8 +102,4 @@ export class MazeGenerator {
         current.walls[2 - dy] = false;
         next.walls[2 + dy] = false;
     }
-}
-
-function isSamePoint(a: Point, b: Point): boolean {
-    return a.x === b.x && a.y === b.y;
 }

@@ -11,6 +11,6 @@ export class MazePresenter {
     ) {
         this.cells = maze.cells;
         this.size = maze.size;
-        this.canvasSize = 128 * maze.size;
+        this.canvasSize = 64 * maze.size;
     }
 }

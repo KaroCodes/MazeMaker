@@ -1,0 +1,5 @@
+.border:hover > * {
+    stroke: transparent;
+    fill: transparent;
+    cursor: pointer;
+}
