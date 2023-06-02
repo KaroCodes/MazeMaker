@@ -4,7 +4,7 @@ import './MazeSVG.css';
 type Rect = Point & {
     width: number,
     height: number,
-    isCorner: boolean,
+    customPath?: string,
 }
 
 type MazeSVGProps = {
@@ -13,14 +13,14 @@ type MazeSVGProps = {
 }
 
 export function MazeSVG({ maze }: MazeSVGProps) {
-    const fill = '#111';
-    const lineWidth = 1;
-    const lineColor = 'white';
+    // const fill = '#111';
+    const lineWidth = 3;
+    let lineColor = 'white';
     const cellSize = 64;
     const mazeSize = maze.size * cellSize;
 
     const borderPaths: { d: string, rect: Rect, toggleExit?: () => void }[] = [];
-    let d = '';
+    let d = ``;// `M0 0 L${mazeSize} 0 L${mazeSize} ${mazeSize} L0 ${mazeSize} Z`;
 
     maze.cells.forEach(row => {
         row.forEach(cell => {
@@ -34,34 +34,42 @@ export function MazeSVG({ maze }: MazeSVGProps) {
             let continuation = false;
 
             if (cell.x === 0 && cell.walls[0]) {
+                const rect = { x, y, width: cellSize / 2, height: cellSize };
+                const customPath = cell.y === 0
+                    ? `M${rect.x} ${rect.y} L${rect.x + cellSize / 2} ${rect.y + cellSize / 2} L${rect.x + cellSize / 2} ${rect.y + cellSize} L${rect.x} ${rect.y + cellSize} Z`
+                    : undefined;
+
                 borderPaths.push({
                     d: `M${tl.x} ${tl.y} L${bl.x} ${bl.y}`,
-                    rect: {
-                        x,
-                        y,
-                        width: cellSize / 2,
-                        height: cellSize,
-                        isCorner: cell.y === 0 || cell.y === maze.size,
-                    },
+                    rect: { ...rect, customPath },
                     toggleExit: () => { console.log('hi'); cell.walls[0] = !cell.walls[0] }
                 });
             }
             if (cell.x === maze.size - 1) {
+                const rect = { x: x + cellSize / 2, y, width: cellSize / 2, height: cellSize };
+
                 borderPaths.push({
                     d: `M${tr.x} ${tr.y} L${br.x} ${br.y}`,
-                    rect: { x: x + cellSize / 2, y, width: cellSize / 2, height: cellSize, isCorner: false }
+                    rect,
                 });
             }
-            if (cell.y === 0) {
+            if (cell.y === 0 && cell.walls[1]) {
+                const rect = { x, y, width: cellSize, height: cellSize / 2 };
+                const customPath = cell.x === 0
+                    ? `M${rect.x} ${rect.y} L${rect.x + cellSize} ${rect.y} L${rect.x + cellSize} ${rect.y + cellSize / 2} L${rect.x + cellSize / 2} ${rect.y + cellSize / 2} Z`
+                    : undefined;
+
+
                 borderPaths.push({
                     d: `M${tl.x} ${tl.y} L${tr.x} ${tr.y}`,
-                    rect: { x, y, width: cellSize, height: cellSize / 2, isCorner: false }
+                    rect: { ...rect, customPath },
                 });
             }
             if (cell.y === maze.size - 1) {
+                const rect = { x, y: y + cellSize / 2, width: cellSize, height: cellSize / 2 };
                 borderPaths.push({
                     d: `M${bl.x} ${bl.y} L${br.x} ${br.y}`,
-                    rect: { x, y: y + cellSize / 2, width: cellSize, height: cellSize / 2, isCorner: false }
+                    rect,
                 });
             }
 
@@ -84,27 +92,28 @@ export function MazeSVG({ maze }: MazeSVGProps) {
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${mazeSize} ${mazeSize}`}>
                 <g>
-                    <path d={d} stroke={lineColor} strokeWidth={lineWidth} fill='none' />
                     {borderPaths.map(({ d, rect, toggleExit }) => {
-                        // const bg = rect.isCorner
-                        //     ? (
-                        //         <path
-                        //             d={`M${rect.x} ${rect.y} L${rect.x + cellSize} ${rect.y} L${rect.x + cellSize} ${rect.y + cellSize / 2} L${rect.x + cellSize / 2} ${rect.y + cellSize / 2} Z`}
-                        //             stroke='none'
-                        //             fill={'blue'}
-                        //             opacity={.5}
-                        //         />
-                        //     )
-                        //     : (
-                        //         <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} />
-                        //     );
+                        const bg = rect.customPath
+                            ? (
+                                <path
+                                    d={rect.customPath}
+                                    stroke='none'
+                                    fill='#111'
+                                    opacity={.5}
+                                />
+                            )
+                            : (
+                                <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} />
+                            );
                         return (
                             <g className='border' onClick={toggleExit}>
-                                <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} />
+                                {bg}
+                                {/* <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} /> */}
                                 <path d={d} stroke={lineColor} strokeWidth={10} fill='none' />
                             </g>
                         )
                     })}
+                    <path d={d} stroke={lineColor} strokeWidth={lineWidth} fill='none' stroke-linejoin='miter' />
                 </g>
             </svg>
         </div>

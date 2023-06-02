@@ -23,13 +23,14 @@ export class MazeGenerator {
 
         // Add cells to this stack whenever we are at a junction.
         const stack = new Array<BuildingCell>();
-        let unvisitedCells = size * size;
+        const cellsCount = size * size;
+        let visitedCells = 0;
         let current = cells[0][0];
 
-        while (unvisitedCells > 0) {
+        while (visitedCells < cellsCount) {
             if (!current.visisted) {
                 current.visisted = true;
-                unvisitedCells--;
+                visitedCells++;
             }
 
             const neighbours = this.getUnvisistedNeighbours(current, cells);
@@ -41,7 +42,7 @@ export class MazeGenerator {
                     current = stack.pop()!;
                     continue;
                 } else {
-                    throw new Error(`Invalid state: no neighbours found and no cells are scheduled to be revisisted but there are still ${unvisitedCells} unvisited cells remaining.`);
+                    throw new Error(`Invalid state: no neighbours found and no cells are scheduled to be revisisted but there are still ${cellsCount - visitedCells} unvisited cells remaining.`);
                 }
             }
 
@@ -57,7 +58,7 @@ export class MazeGenerator {
             current = next;
         }
 
-        return { cells, size, exits: [] };
+        return { cells, size };
     }
 
     // Generates a grid [size x size] with each cell surrounded by walls.
