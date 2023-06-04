@@ -6,6 +6,7 @@ import { Maze } from './maze/maze'
 import { MazeGenerator } from './maze/maze_generator';
 import { MazePresenter } from './maze/maze_presenter'
 import seedrandom from "seedrandom";
+import { convertMazeToPaths } from './maze/maze_to_paths_converter';
 
 const randomIntGenerator = (seed: number) => {
     const srnd = seedrandom(`${seed}`);
@@ -17,6 +18,11 @@ const defaultMaze: Maze = mazeGenerator.generate({ seed: 1, size: 9 });
 function MazeApp() {
 
     const [maze, setMaze] = useState<Maze>(defaultMaze);
+
+    const f = async () => {
+        convertMazeToPaths(maze);
+    };
+    f();
 
     // const mazePresenter = new MazePresenter(maze);
 

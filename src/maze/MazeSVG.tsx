@@ -92,7 +92,7 @@ export function MazeSVG({ maze }: MazeSVGProps) {
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${mazeSize} ${mazeSize}`}>
                 <g>
-                    {borderPaths.map(({ d, rect, toggleExit }) => {
+                    {borderPaths.map(({ d, rect, toggleExit }, i) => {
                         const bg = rect.customPath
                             ? (
                                 <path
@@ -106,14 +106,14 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                                 <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} />
                             );
                         return (
-                            <g className='border' onClick={toggleExit}>
+                            <g className='border' key={i} onClick={toggleExit}>
                                 {bg}
                                 {/* <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} /> */}
                                 <path d={d} stroke={lineColor} strokeWidth={10} fill='none' />
                             </g>
                         )
                     })}
-                    <path d={d} stroke={lineColor} strokeWidth={lineWidth} fill='none' stroke-linejoin='miter' />
+                    <path d={d} stroke={lineColor} strokeWidth={lineWidth} fill='none' strokeLinejoin='miter' />
                 </g>
             </svg>
         </div>
