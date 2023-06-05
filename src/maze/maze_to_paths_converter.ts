@@ -6,28 +6,53 @@ type Node = Point & {
 }
 
 export function convertMazeToPaths(maze: Maze): string[] {
-    const edgelessMaze: Maze = _.cloneDeep(maze);
-    const cells = edgelessMaze.cells;
-    const size = edgelessMaze.size;
 
     // remove outer walls from the copy of the maze so they don't interfere with
     // tree creation (trees should only contain inner walls).
-    cells.forEach(row => {
+    const edgelessMaze = copyWithoutEdges(maze);
+
+    // roots are any walls growing directly from maze's edges
+    const roots = getRoots(edgelessMaze);
+
+    const trees = roots
+        .map(point => buildNode(edgelessMaze, point))
+        .filter(node => node.children.length > 0);
+
+    console.log(trees);
+
+
+
+    // const paths = trees.map
+
+
+    return [];
+}
+
+function copyWithoutEdges(maze: Maze): Maze {
+    const edgelessMaze: Maze = _.cloneDeep(maze);
+
+    edgelessMaze.cells.forEach(row => {
         row.forEach(cell => {
             if (cell.x === 0) {
                 cell.walls[0] = false;
-            } else if (cell.x === size - 1) {
+            } else if (cell.x === edgelessMaze.size - 1) {
                 cell.walls[2] = false;
             }
             if (cell.y === 0) {
                 cell.walls[1] = false;
-            } else if (cell.y === size - 1) {
+            } else if (cell.y === edgelessMaze.size - 1) {
                 cell.walls[3] = false;
             }
         })
     });
 
-    const startPoints: Point[] = []
+    return edgelessMaze;
+}
+
+function getRoots(maze: Maze): Point[] {
+    const { cells, size } = maze;
+    const startPoints: Point[] = [];
+
     const hasWall = (idx: number) =>
         (cell: Cell) => cell.walls[idx];
     const shift = (dx: number, dy: number) =>
@@ -50,16 +75,7 @@ export function convertMazeToPaths(maze: Maze): string[] {
         .map(shift(1, 1))
     );
 
-    const trees = startPoints
-        .map(point => buildNode(edgelessMaze, point))
-        .filter(node => node.children.length > 0);
-
-    console.log(trees);
-
-    // const paths = trees.map
-
-
-    return [];
+    return startPoints;
 }
 
 function buildNode(maze: Maze, p: Point, parent?: Point): Node {
