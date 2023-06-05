@@ -1,11 +1,20 @@
 import * as _ from 'lodash';
 import { Cell, Maze, Point } from "./maze";
 
-type Node = Point & {
+type Node = {
     children: Node[],
+} & Point;
+
+type Line = {
+    src: Point,
+    dst: Point,
 }
 
-export function convertMazeToPaths(maze: Maze): string[] {
+export type Command = {
+    type: 'M' | 'L',
+} & Point;
+
+export function convertMazeToPaths(maze: Maze): Command[] {
 
     // remove outer walls from the copy of the maze so they don't interfere with
     // tree creation (trees should only contain inner walls).
@@ -14,18 +23,19 @@ export function convertMazeToPaths(maze: Maze): string[] {
     // roots are any walls growing directly from maze's edges
     const roots = getRoots(edgelessMaze);
 
-    const trees = roots
-        .map(point => buildNode(edgelessMaze, point))
-        .filter(node => node.children.length > 0);
+    // build trees growing from the edge-roots
+    const trees = roots.map(node => buildNode(edgelessMaze, node));
 
-    console.log(trees);
+    // convert nodes to lines, node.children[0] always exists
+    const lines = trees.flatMap(node => toLines(node.children[0], node));
 
+    // remove midpoints e.g. path (0,1) -> (0,2) -> (0,3) becomes (0,1) -> (0,3));
+    const simplified = removeMidpoints(lines);
 
+    // turn lines into commands instructing to either move (M) or draw line (L)
+    const commands = toCommands(simplified);
 
-    // const paths = trees.map
-
-
-    return [];
+    return commands;
 }
 
 function copyWithoutEdges(maze: Maze): Maze {
@@ -110,6 +120,69 @@ function buildNode(maze: Maze, p: Point, parent?: Point): Node {
     }
 
     return { x, y, children };
+}
+
+function toLines(node: Node, parent: Node): Line[] {
+    const line = {
+        src: { x: parent.x, y: parent.y },
+        dst: { x: node.x, y: node.y },
+    };
+
+    if (!node.children) {
+        return [line];
+    }
+
+    return [line].concat(node.children.flatMap(c => toLines(c, node)));
+}
+
+function removeMidpoints(lines: Line[]): Line[] {
+    if (!lines.length) {
+        return [];
+    }
+
+    const simplified = [lines.shift()!];
+    let prev, next: Line;
+
+    while (lines.length) {
+        prev = simplified.pop()!;
+        next = lines.shift()!;
+        simplified.push(...maybeRemoveMidpoint(prev, next));
+    }
+
+    return simplified;
+}
+
+function maybeRemoveMidpoint(prev: Line, next: Line): Line[] {
+    if ((prev.dst.x === next.src.x && prev.dst.y === next.src.y) && // previous line ends where next one starts
+        (prev.src.x === next.dst.x || prev.src.y === next.dst.y)) { // source of previous line is in the same row or column as the next lines destination
+        return [{ src: prev.src, dst: next.dst }];
+    }
+    return [prev, next];
+}
+
+function toCommands(lines: Line[]): Command[] {
+    if (!lines.length) {
+        return [];
+    }
+
+    const commands: Command[] = [];
+    let prev = undefined, next: Line;
+    for (let i = 0; i < lines.length; i++) {
+        next = lines[i];
+        commands.push(...getCommands(prev, next));
+        prev = next;
+    }
+
+    return commands;
+}
+
+function getCommands(prev: Line | undefined, next: Line): Command[] {
+    const lineTo: Command = { type: 'L', x: next.dst.x, y: next.dst.y };
+    if (prev && prev.dst.x === next.src.x && prev.dst.y === next.src.y) { // is a continuation 
+        return [lineTo];
+    }
+    const moveTo: Command = { type: 'M', x: next.src.x, y: next.src.y };
+    return [moveTo, lineTo];
 }
 
 function isSame(a: Point, b?: Point): boolean {
