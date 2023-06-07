@@ -1,15 +1,18 @@
-import { Cell, Maze, Point } from "./maze";
+import { Cell, Maze, Point } from "./models";
 
 type BuildingCell = Cell & { visisted: boolean }
 
 export class MazeGenerator {
 
     constructor(
-        private readonly randomIntGenerator: (seed: number) => (min: number, max: number) => number,
+        private readonly randomIntGenerator: (seed: number) =>
+            (min: number, max: number) => number,
     ) {
     }
 
     /**
+     * Generate a predictibly random maze, e.g. same seed and size will always
+     * produce the same maze.
      * 
      * @param seed  number used for maze randomization
      * @param size  length of the side of the square grid

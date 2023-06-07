@@ -1,5 +1,6 @@
-import { Maze, Point } from './maze';
-import './MazeSVG.css';
+import { MazeConverter } from '../util/maze_converter';
+import { Maze, Point } from '../util/models';
+import './EditableMaze.css';
 
 type Rect = Point & {
     width: number,
@@ -12,15 +13,17 @@ type MazeSVGProps = {
     // presenter: MazePresenter,
 }
 
-export function MazeSVG({ maze }: MazeSVGProps) {
+export function EditableMaze({ maze }: MazeSVGProps) {
     // const fill = '#111';
     const lineWidth = 3;
     let lineColor = 'white';
     const cellSize = 64;
     const mazeSize = maze.size * cellSize;
 
-    const borderPaths: { d: string, rect: Rect, toggleExit?: () => void }[] = [];
-    let d = ``;// `M0 0 L${mazeSize} 0 L${mazeSize} ${mazeSize} L0 ${mazeSize} Z`;
+    const borderPaths: { d: string, rect: Rect, open: boolean, toggleExit?: () => void }[] = [];
+    const cmds = MazeConverter.toInnerPaths(maze);
+    const d = cmds.map(cmd => `${cmd.type}${cmd.x * cellSize} ${cmd.y * cellSize}`).join(' ');
+    console.log(d)
 
     maze.cells.forEach(row => {
         row.forEach(cell => {
@@ -31,8 +34,6 @@ export function MazeSVG({ maze }: MazeSVGProps) {
             const bl = { x, y: y + cellSize };
             const br = { x: x + cellSize, y: y + cellSize };
 
-            let continuation = false;
-
             if (cell.x === 0 && cell.walls[0]) {
                 const rect = { x, y, width: cellSize / 2, height: cellSize };
                 const customPath = cell.y === 0
@@ -42,7 +43,8 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                 borderPaths.push({
                     d: `M${tl.x} ${tl.y} L${bl.x} ${bl.y}`,
                     rect: { ...rect, customPath },
-                    toggleExit: () => { console.log('hi'); cell.walls[0] = !cell.walls[0] }
+                    open: false,
+                    toggleExit: () => { console.log('hi'); cell.walls[0] = !cell.walls[0]; }
                 });
             }
             if (cell.x === maze.size - 1) {
@@ -51,6 +53,7 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                 borderPaths.push({
                     d: `M${tr.x} ${tr.y} L${br.x} ${br.y}`,
                     rect,
+                    open: false,
                 });
             }
             if (cell.y === 0 && cell.walls[1]) {
@@ -63,6 +66,7 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                 borderPaths.push({
                     d: `M${tl.x} ${tl.y} L${tr.x} ${tr.y}`,
                     rect: { ...rect, customPath },
+                    open: false,
                 });
             }
             if (cell.y === maze.size - 1) {
@@ -70,20 +74,8 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                 borderPaths.push({
                     d: `M${bl.x} ${bl.y} L${br.x} ${br.y}`,
                     rect,
+                    open: false,
                 });
-            }
-
-            if (cell.walls[0] && cell.x !== 0) {
-                d += `M${bl.x} ${bl.y} L${tl.x} ${tl.y}`;
-                continuation = true;
-            }
-            if (cell.walls[1] && cell.y !== 0) {
-                if (continuation) {
-                    d += `L${tr.x} ${tr.y}`;
-                } else {
-                    d += `M${tl.x} ${tl.y} L${tr.x} ${tr.y}`;
-                }
-                continuation = true;
             }
         })
     })
@@ -92,7 +84,7 @@ export function MazeSVG({ maze }: MazeSVGProps) {
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${mazeSize} ${mazeSize}`}>
                 <g>
-                    {borderPaths.map(({ d, rect, toggleExit }, i) => {
+                    {borderPaths.map(({ open, d, rect, toggleExit }, i) => {
                         const bg = rect.customPath
                             ? (
                                 <path
@@ -106,9 +98,8 @@ export function MazeSVG({ maze }: MazeSVGProps) {
                                 <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} />
                             );
                         return (
-                            <g className='border' key={i} onClick={toggleExit}>
+                            <g className={open ? 'exit' : 'border'} key={i} onClick={toggleExit}>
                                 {bg}
-                                {/* <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill={'#111'} opacity={.5} /> */}
                                 <path d={d} stroke={lineColor} strokeWidth={10} fill='none' />
                             </g>
                         )
@@ -120,4 +111,4 @@ export function MazeSVG({ maze }: MazeSVGProps) {
     )
 }
 
-export default MazeSVG
+export default EditableMaze

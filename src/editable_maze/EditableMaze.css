@@ -3,3 +3,9 @@
     fill: transparent;
     cursor: pointer;
 }
+
+.exit:hover > * {
+    stroke: transparent;
+    fill: red;
+    cursor: pointer;
+}

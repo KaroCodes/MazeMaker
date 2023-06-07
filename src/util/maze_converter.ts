@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Cell, Maze, Point } from "./maze";
+import { Cell, Command, Maze, Point } from "./models";
 
 type Node = {
     children: Node[],
@@ -10,32 +10,41 @@ type Line = {
     dst: Point,
 }
 
-export type Command = {
-    type: 'M' | 'L',
-} & Point;
+export class MazeConverter {
 
-export function convertMazeToPaths(maze: Maze): Command[] {
+    constructor() {
+    }
 
-    // remove outer walls from the copy of the maze so they don't interfere with
-    // tree creation (trees should only contain inner walls).
-    const edgelessMaze = copyWithoutEdges(maze);
+    /**
+     * Function to convert a Maze into a set of Commands that describe how to draw
+     * the inner walls of the maze.
+     * 
+     * @param maze maze object to be converted into path commands
+     * @returns list of path commands describing inner walls of the maze
+     */
+    static toInnerPaths(maze: Maze): Command[] {
 
-    // roots are any walls growing directly from maze's edges
-    const roots = getRoots(edgelessMaze);
+        // remove outer walls from the copy of the maze so they don't interfere with
+        // tree creation (trees should only contain inner walls).
+        const edgelessMaze = copyWithoutEdges(maze);
 
-    // build trees growing from the edge-roots
-    const trees = roots.map(node => buildNode(edgelessMaze, node));
+        // roots are any walls growing directly from maze's edges
+        const roots = getRoots(edgelessMaze);
 
-    // convert nodes to lines, node.children[0] always exists
-    const lines = trees.flatMap(node => toLines(node.children[0], node));
+        // build trees growing from the edge-roots
+        const trees = roots.map(node => buildNode(edgelessMaze, node));
 
-    // remove midpoints e.g. path (0,1) -> (0,2) -> (0,3) becomes (0,1) -> (0,3));
-    const simplified = removeMidpoints(lines);
+        // convert nodes to lines, node.children[0] always exists
+        const lines = trees.flatMap(node => nodesToLines(node.children[0], node));
 
-    // turn lines into commands instructing to either move (M) or draw line (L)
-    const commands = toCommands(simplified);
+        // remove midpoints e.g. path (0,1) -> (0,2) -> (0,3) becomes (0,1) -> (0,3));
+        const simplified = removeMidpoints(lines);
 
-    return commands;
+        // turn lines into commands instructing to either move (M) or draw line (L)
+        const commands = linesToCommands(simplified);
+
+        return commands;
+    }
 }
 
 function copyWithoutEdges(maze: Maze): Maze {
@@ -122,7 +131,7 @@ function buildNode(maze: Maze, p: Point, parent?: Point): Node {
     return { x, y, children };
 }
 
-function toLines(node: Node, parent: Node): Line[] {
+function nodesToLines(node: Node, parent: Node): Line[] {
     const line = {
         src: { x: parent.x, y: parent.y },
         dst: { x: node.x, y: node.y },
@@ -132,7 +141,7 @@ function toLines(node: Node, parent: Node): Line[] {
         return [line];
     }
 
-    return [line].concat(node.children.flatMap(c => toLines(c, node)));
+    return [line].concat(node.children.flatMap(c => nodesToLines(c, node)));
 }
 
 function removeMidpoints(lines: Line[]): Line[] {
@@ -160,7 +169,7 @@ function maybeRemoveMidpoint(prev: Line, next: Line): Line[] {
     return [prev, next];
 }
 
-function toCommands(lines: Line[]): Command[] {
+function linesToCommands(lines: Line[]): Command[] {
     if (!lines.length) {
         return [];
     }
@@ -169,14 +178,14 @@ function toCommands(lines: Line[]): Command[] {
     let prev = undefined, next: Line;
     for (let i = 0; i < lines.length; i++) {
         next = lines[i];
-        commands.push(...getCommands(prev, next));
+        commands.push(...buildCommands(prev, next));
         prev = next;
     }
 
     return commands;
 }
 
-function getCommands(prev: Line | undefined, next: Line): Command[] {
+function buildCommands(prev: Line | undefined, next: Line): Command[] {
     const lineTo: Command = { type: 'L', x: next.dst.x, y: next.dst.y };
     if (prev && prev.dst.x === next.src.x && prev.dst.y === next.src.y) { // is a continuation 
         return [lineTo];

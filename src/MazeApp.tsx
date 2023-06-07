@@ -1,38 +1,22 @@
 import { useState } from 'react';
-import './MazeApp.css'
-import MazeCanvas from './maze/MazeCanvas'
-import MazeSVG from './maze/MazeSVG';
-import { Maze } from './maze/maze'
-import { MazeGenerator } from './maze/maze_generator';
-import { MazePresenter } from './maze/maze_presenter'
-import seedrandom from "seedrandom";
-import { convertMazeToPaths } from './maze/maze_to_paths_converter';
+import './MazeApp.css';
+import EditableMaze from './editable_maze/EditableMaze';
+import { MazeAppPresenter } from './maze_app_presenter';
+import { Maze } from './util/models';
 
-const randomIntGenerator = (seed: number) => {
-    const srnd = seedrandom(`${seed}`);
-    return (min: number, max: number) => Math.floor(srnd() * (max - min) + min);
+export type MazeAppProps = {
+    presenter: MazeAppPresenter,
 }
-const mazeGenerator = new MazeGenerator(randomIntGenerator);
-const defaultMaze: Maze = mazeGenerator.generate({ seed: 1, size: 9 });
 
-function MazeApp() {
+function MazeApp({ presenter }: MazeAppProps) {
 
-    const [maze, setMaze] = useState<Maze>(defaultMaze);
-
-    const f = async () => {
-        convertMazeToPaths(maze);
-    };
-    f();
-
-    // const mazePresenter = new MazePresenter(maze);
+    const [maze, setMaze] = useState<Maze>(presenter.defaultMaze);
 
     return (
         <div className='container'>
             <button onClick={() =>
-                setMaze(mazeGenerator.generate({ seed: Math.random(), size: 9 })
-                )}>Get new maze</button>
-            {/* <MazeCanvas presenter={mazePresenter} /> */}
-            <MazeSVG maze={maze} />
+                setMaze(presenter.getRandomMaze())}>Get new maze</button>
+            <EditableMaze maze={maze} />
         </div>
     )
 }
