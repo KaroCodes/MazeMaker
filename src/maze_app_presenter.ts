@@ -1,3 +1,4 @@
+import { EditableMazePresenter, EditableMazePresenterFactory } from "./editable_maze/editable_maze_presenter";
 import { MazeGenerator } from "./util/maze_generator";
 import { Maze } from "./util/models";
 
@@ -10,6 +11,7 @@ export class MazeAppPresenter {
 
     constructor(
         private readonly mazeGenerator: MazeGenerator,
+        private readonly editableMazePresenterFactory: EditableMazePresenterFactory,
     ) {
         this.defaultMaze = mazeGenerator.generate({
             seed: DEFAULT_SEED,
@@ -22,5 +24,9 @@ export class MazeAppPresenter {
             seed: Math.random(),
             size: size || DEFAULT_SIZE,
         });
+    }
+
+    getEditablePresenter(maze: Maze): EditableMazePresenter {
+        return this.editableMazePresenterFactory.create(maze);
     }
 }

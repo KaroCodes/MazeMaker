@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { Cell, Command, Maze, Point } from "./models";
+import { Point } from './maths';
+import { Cell, Command, Maze } from "./models";
 
 type Node = {
     children: Node[],
@@ -16,13 +17,13 @@ export class MazeConverter {
     }
 
     /**
-     * Function to convert a Maze into a set of Commands that describe how to draw
-     * the inner walls of the maze.
+     * Function to convert a Maze into a set of Commands that describe how to
+     * draw the inner walls of the maze.
      * 
      * @param maze maze object to be converted into path commands
      * @returns list of path commands describing inner walls of the maze
      */
-    static toInnerPaths(maze: Maze): Command[] {
+    toInnerWalls(maze: Maze): Command[] {
 
         // remove outer walls from the copy of the maze so they don't interfere with
         // tree creation (trees should only contain inner walls).
@@ -132,9 +133,9 @@ function buildNode(maze: Maze, p: Point, parent?: Point): Node {
 }
 
 function nodesToLines(node: Node, parent: Node): Line[] {
-    const line = {
-        src: { x: parent.x, y: parent.y },
-        dst: { x: node.x, y: node.y },
+    const line: Line = {
+        src: parent,
+        dst: node,
     };
 
     if (!node.children) {

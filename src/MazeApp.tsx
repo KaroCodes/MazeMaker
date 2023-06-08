@@ -16,7 +16,7 @@ function MazeApp({ presenter }: MazeAppProps) {
         <div className='container'>
             <button onClick={() =>
                 setMaze(presenter.getRandomMaze())}>Get new maze</button>
-            <EditableMaze maze={maze} />
+            <EditableMaze presenter={presenter.getEditablePresenter(maze)} />
         </div>
     )
 }

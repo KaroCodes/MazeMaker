@@ -1,7 +1,4 @@
-export type Point = {
-    x: number,
-    y: number,
-}
+import { Point } from "./maths";
 
 export type Cell = {
     walls: boolean[], // [ left, top, right, bottom ]
