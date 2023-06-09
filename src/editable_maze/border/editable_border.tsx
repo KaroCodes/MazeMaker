@@ -155,31 +155,15 @@ function getCornerPath(
     side: number,
     last: number,
 ): string | undefined {
-    // if not a corner cell's border return undefined
-    if (!((x === 0 || x >= last - 1) && (y === 0 || y >= last - 1))) {
+    const isCorner = (x === 0 || x >= last - 1) && (y === 0 || y >= last - 1);
+    if (!isCorner) {
         return;
     }
 
     const shape = CORNER_SHAPE.clone();
-
-    if (x === last && y === 0) { // last
-        shape.flipX()
-    }
-    if (x === 0 && y === 0 && side !== 0) { // 0
-        shape.flipX()
-    }
-    if (x === 0 && y === last - 1) { // last - 1
-        shape.flipX()
-    }
-    if (x === last - 1 && y === last) { // last * 2 - 1
-        shape.flipX()
-    }
-
-    if (x === 0 && side !== 0) shape.rotate(90);
-    if (y === last - 1) shape.rotate(180);
-    if (x === last - 1) shape.rotate(270);
-    if (x >= last - 1) shape.translateX(last);
-    if (y >= last - 1) shape.translateY(last);
+    if (side % 2 != 0) shape.rotate(90).flipY();
+    if (x >= last - 1) shape.flipX().translateX(last);
+    if (y >= last - 1) shape.flipY().translateY(last);
 
     if (!shape) {
         return;
