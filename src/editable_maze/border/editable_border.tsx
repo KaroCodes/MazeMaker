@@ -8,17 +8,20 @@ import { Rect } from '../../geometry/rect';
 const BACKGROUND_COLOR = 'red';//'#111';
 
 /**
- * ◣
- * ■
+
  * This shape exists in Cartesian coordinate system not in SVG/Canvas space,
  * meaning: (0, 0) is the "center" of our plane while for SVG (0, 0) is the
  * left-top corner.
+ * The shape appears like this in svg space:
+ * ◣
+ * ■
+ * and upside flipped upside down in cartesian coords (described below).
  */
 const CORNER_SHAPE = new Shape([
     new Point(0.0, 0.0),
-    new Point(0.5, -0.5),
-    new Point(0.5, -1.0),
-    new Point(0.0, -1.0),
+    new Point(0.5, 0.5),
+    new Point(0.5, 1.0),
+    new Point(0.0, 1.0),
 ]);
 
 type Background = {
@@ -136,8 +139,6 @@ function getBorderBackground(
     side: number,
     last: number,
 ): Background {
-    console.log(`x: ${x}, y: ${y}`)
-
     const d = getCornerPath(x, y, scale, side, last);
     if (d) {
         return { type: 'PATH', d };
@@ -154,36 +155,37 @@ function getCornerPath(
     side: number,
     last: number,
 ): string | undefined {
-    // console.log(`x: ${x}, y: ${y}`)
     let shape: Shape | undefined;
 
     if (x === 0 && y === 0) {
         shape = CORNER_SHAPE.clone();
-        side ? shape.rotate(-90) : shape.flipY();
+        if (side) {
+            shape.rotate(-90).flipX();
+        }
     }
     if (x === 0 && y === last - 1) {
         shape = CORNER_SHAPE.clone();
-        shape.translateY(last)
+        shape.flipY().translateY(last);
     }
     if (x === 0 && y === last) {
         shape = CORNER_SHAPE.clone();
-        shape.rotate(90).flipX().translateY(last);
+        shape.rotate(90).translateY(last);
     }
     if (x === last - 1 && y === 0) {
         shape = CORNER_SHAPE.clone();
-        shape.flipX().rotate(90).translateX(last)
+        shape.rotate(-90).translateX(last)
     }
     if (x === last && y === 0) {
         shape = CORNER_SHAPE.clone();
-        shape.flipX().flipY().translateX(last)
+        shape.flipX().translateX(last)
     }
     if (x === last - 1 && y === last) {
         shape = CORNER_SHAPE.clone();
-        shape.flipX().flipY().rotate(-90).translateX(last).translateY(last)
+        shape.rotate(90).flipX().translateX(last).translateY(last)
     }
     if (x === last && y === last - 1) {
         shape = CORNER_SHAPE.clone();
-        shape.flipY().rotate(180).translateX(last).translateY(last)
+        shape.rotate(180).translateX(last).translateY(last)
     }
 
     if (!shape) {
