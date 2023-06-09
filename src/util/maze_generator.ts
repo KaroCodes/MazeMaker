@@ -1,4 +1,4 @@
-import { Cell, Maze, Point } from "./models";
+import { Cell, Maze } from "./models";
 
 type BuildingCell = Cell & { visisted: boolean }
 
@@ -82,7 +82,7 @@ export class MazeGenerator {
     }
 
     private getUnvisistedNeighbours(
-        cell: Point,
+        cell: Cell,
         cells: BuildingCell[][],
     ): BuildingCell[] {
         const { x, y } = cell;

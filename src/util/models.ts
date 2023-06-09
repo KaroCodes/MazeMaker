@@ -1,8 +1,8 @@
-import { Point } from "./maths";
-
 export type Cell = {
+    x: number,
+    y: number,
     walls: boolean[], // [ left, top, right, bottom ]
-} & Point;
+};
 
 export type Maze = {
     size: number,
@@ -11,4 +11,6 @@ export type Maze = {
 
 export type Command = {
     type: 'M' | 'L',
-} & Point;
+    x: number,
+    y: number,
+};

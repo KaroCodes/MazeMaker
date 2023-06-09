@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
-import { Point } from './maths';
+import { Point } from '../geometry/point';
 import { Cell, Command, Maze } from "./models";
 
 type Node = {
+    p: Point,
     children: Node[],
-} & Point;
+};
 
 type Line = {
     src: Point,
@@ -76,7 +77,7 @@ function getRoots(maze: Maze): Point[] {
     const hasWall = (idx: number) =>
         (cell: Cell) => cell.walls[idx];
     const shift = (dx: number, dy: number) =>
-        (cell: Cell) => ({ x: cell.x + dx, y: cell.y + dy });
+        (cell: Cell) => new Point(cell.x + dx, cell.y + dy);
 
     startPoints.push(...cells[0] // top row
         .filter(hasWall(2))
@@ -106,36 +107,36 @@ function buildNode(maze: Maze, p: Point, parent?: Point): Node {
     const brCell = maze.cells[y]?.[x];
 
     // if there's a wall to the left _.
-    const l = { x: x - 1, y };
-    if (tlCell?.walls[3] && !isSame(l, parent)) {
+    const l = new Point(x - 1, y);
+    if (tlCell?.walls[3] && !l.equals(parent)) {
         children.push(buildNode(maze, l, p));
     }
 
     // if there's a wall on the top !
-    const t = { x, y: y - 1 };
-    if (tlCell?.walls[2] && !isSame(t, parent)) {
+    const t = new Point(x, y - 1);
+    if (tlCell?.walls[2] && !t.equals(parent)) {
         children.push(buildNode(maze, t, p));
     }
 
     // if there's a wall to the right ._
-    const r = { x: x + 1, y };
-    if (brCell?.walls[1] && !isSame(r, parent)) {
+    const r = new Point(x + 1, y);
+    if (brCell?.walls[1] && !r.equals(parent)) {
         children.push(buildNode(maze, r, p));
     }
 
     // if there's a wall on the bottom ¡
-    const b = { x, y: y + 1 };
-    if (brCell?.walls[0] && !isSame(b, parent)) {
+    const b = new Point(x, y + 1);
+    if (brCell?.walls[0] && !b.equals(parent)) {
         children.push(buildNode(maze, b, p));
     }
 
-    return { x, y, children };
+    return { p: new Point(x, y), children };
 }
 
 function nodesToLines(node: Node, parent: Node): Line[] {
     const line: Line = {
-        src: parent,
-        dst: node,
+        src: parent.p,
+        dst: node.p,
     };
 
     if (!node.children) {
@@ -193,8 +194,4 @@ function buildCommands(prev: Line | undefined, next: Line): Command[] {
     }
     const moveTo: Command = { type: 'M', x: next.src.x, y: next.src.y };
     return [moveTo, lineTo];
-}
-
-function isSame(a: Point, b?: Point): boolean {
-    return a.x === b?.x && a.y === b.y;
 }

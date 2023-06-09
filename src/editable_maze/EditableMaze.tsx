@@ -21,6 +21,7 @@ export function EditableMaze({ presenter }: EditableMazeProps) {
     ).join(' ');
 
     const borderCells = presenter.getBorderCells();
+    console.log(borderCells)
 
     return (
         <div>

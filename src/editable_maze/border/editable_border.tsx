@@ -1,25 +1,25 @@
 import * as _ from 'lodash';
 import { useCallback, useState } from "react";
-import { Cell } from "../../util/models"
-import { Point, flipShape, multiply, rotateShape } from "../../util/maths";
+import { Cell } from "../../util/models";
+import { Point } from '../../geometry/point';
+import { Shape } from '../../geometry/shape';
+import { Rect } from '../../geometry/rect';
 
-const BACKGROUND_COLOR = "#111";
+const BACKGROUND_COLOR = 'red';//'#111';
 
 /**
  * ◣
  * ■
+ * This shape exists in Cartesian coordinate system not in SVG/Canvas space,
+ * meaning: (0, 0) is the "center" of our plane while for SVG (0, 0) is the
+ * left-top corner.
  */
-const CORNER_SHAPE = [
-    { x: 0.0, y: 0.0 },
-    { x: 0.5, y: -0.5 },
-    { x: 0.5, y: -1.0 },
-    { x: 0.0, y: -1.0 },
-];
-
-type Rect = {
-    width: number,
-    height: number
-} & Point;
+const CORNER_SHAPE = new Shape([
+    new Point(0.0, 0.0),
+    new Point(0.5, -0.5),
+    new Point(0.5, -1.0),
+    new Point(0.0, -1.0),
+]);
 
 type Background = {
     type: 'PATH',
@@ -57,117 +57,147 @@ export function EditableBorder({
 
     const border = getBorder(cell, cellSize, side, mazeSize);
 
+    const Background = () => {
+        const fill = open ? 'transparent' : BACKGROUND_COLOR;
+
+        if (border.background.type === 'RECT') {
+            const { x, y, width, height } = border.background.rect;
+            return (
+                <rect x={x} y={y} width={width} height={height}
+                    opacity={.5} fill={fill} />
+            )
+        }
+
+        return (
+            <path d={border.background.d} opacity={.5} fill={fill} />
+        )
+    }
+
+    const Border = () => {
+        if (open || !border) {
+            return null;
+        }
+        return (
+            <path d={border.d} stroke='white' strokeLinejoin='miter' strokeWidth={8} />
+        )
+    };
+
     return (
         <g onClick={onClick}>
-            {border.background.type === 'RECT'
-                ? <rect x={border.background.rect.x} y={border.background.rect.y}
-                    width={border.background.rect.width} height={border.background.rect.height}
-                    opacity={.5}
-                    fill={open ? 'transparent' : BACKGROUND_COLOR} />
-                : <path d={border.background.d} opacity={.5}
-                    fill={open ? 'transparent' : BACKGROUND_COLOR} />
-            }
-
-            {!open && border
-                ? <path d={border.d} stroke='white' strokeLinejoin='miter' strokeWidth={8} />
-                : undefined
-            }
+            <Background />
+            <Border />
         </g>
     )
 }
 
 function getBorder(
-    cell: Cell, size: number,
-    side: number, cellsCount: number,
+    cell: Cell, scale: number,
+    side: number, last: number,
 ): Border {
-    let sx, sy, dx, dy: number;
-    sx = sy = dx = dy = 0;
+    const src = new Point(cell.x, cell.y);
+    const dst = src.clone();
 
     switch (side) {
         case 0: {
-            sx = dx = cell.x;
-            sy = cell.y;
-            dy = cell.y + 1;
+            dst.y++;
             break;
         }
         case 1: {
-            sx = cell.x;
-            sy = dy = cell.y;
-            dx = cell.x + 1;
+            dst.x++;
             break;
         }
         case 2: {
-            sx = dx = cell.x + 1;
-            sy = cell.y;
-            dy = cell.y + 1;
+            src.x++;
+            dst.x++;
+            dst.y++;
             break;
         }
         case 3: {
-            sx = cell.x;
-            sy = dy = cell.y + 1;
-            dx = cell.x + 1;
+            src.y++;
+            dst.x++;
+            dst.y++;
             break;
         }
     }
-    sx *= size;
-    sy *= size;
-    dx *= size;
-    dy *= size;
 
-    const d = `M${sx} ${sy} L${dx} ${dy}`;
+    const background = getBorderBackground(src.x, src.y, scale, side, last);
 
-    const background = getBorderBackground(sx, sy, size, side, cellsCount);
+    src.multiply(scale);
+    dst.multiply(scale);
+
+    const d = `M${src.x} ${src.y} L${dst.x} ${dst.y}`;
 
     return { d, background }
 }
 
 function getBorderBackground(
     x: number, y: number,
-    size: number,
+    scale: number,
     side: number,
-    cellsCount: number,
+    last: number,
 ): Background {
-    const rect = getRect(x, y, size, side);
+    console.log(`x: ${x}, y: ${y}`)
 
-    let ps: Point[] = [];
-    // left border
-    if (x === 0) {
-        // top corner
-        if (y === 0) {
-            // left border
-            if (side === 0) {
-                ps = flipShape(CORNER_SHAPE, { flipY: true })
-            } else {
-                ps = flipShape(rotateShape(flipShape(CORNER_SHAPE, { flipX: true }), 270), { flipY: true });
-                console.log(ps)
-            }
-        }
+    const d = getCornerPath(x, y, scale, side, last);
+    if (d) {
+        return { type: 'PATH', d };
     }
-    if (ps.length !== 4) {
-        return { type: 'RECT', rect };
-    }
-    ps = ps.map(p => multiply(p, size));
-    const d = 'M' + ps.map(p => `${p.x} ${p.y}`).join(' L') + ' Z';
-    // console.log(d)
 
-    return { type: 'PATH', d }
+    const rect = getRect(x, y, side).scale(scale);
+    return { type: 'RECT', rect };
 }
 
-function getRect(x: number, y: number, size: number, side: number): Rect {
-    const halfSize = size / 2;
+function getCornerPath(
+    x: number,
+    y: number,
+    scale: number,
+    side: number,
+    last: number,
+): string | undefined {
+    // console.log(`x: ${x}, y: ${y}`)
+    let shape: Shape | undefined;
+
+    if (x === 0 && y === 0) {
+        shape = CORNER_SHAPE.clone();
+        side ? shape.rotate(-90) : shape.flipY();
+    }
+    if (x === 0 && y === last - 1) {
+        shape = CORNER_SHAPE.clone();
+        shape.translateY(last)
+    }
+    if (x === 0 && y === last) {
+        shape = CORNER_SHAPE.clone();
+        shape.rotate(90).flipX().translateY(last);
+    }
+    if (x === last - 1 && y === 0) {
+        shape = CORNER_SHAPE.clone();
+        shape.flipX().rotate(90).translateX(last)
+    }
+    if (x === last && y === 0) {
+        shape = CORNER_SHAPE.clone();
+        shape.flipX().flipY().translateX(last)
+    }
+    if (x === last - 1 && y === last) {
+        shape = CORNER_SHAPE.clone();
+        shape.flipX().flipY().rotate(-90).translateX(last).translateY(last)
+    }
+    if (x === last && y === last - 1) {
+        shape = CORNER_SHAPE.clone();
+        shape.flipY().rotate(180).translateX(last).translateY(last)
+    }
+
+    if (!shape) {
+        return;
+    }
+    return shape.scale(scale).toSvgPath();
+}
+
+function getRect(x: number, y: number, side: number): Rect {
     switch (side) {
-        case 0: {
-            return { x, y, width: halfSize, height: size };
-        }
-        case 1: {
-            return { x, y, width: size, height: halfSize };
-        }
-        case 2: {
-            return { x: x - halfSize, y, width: halfSize, height: size };
-        }
-        case 3: {
-            return { x, y: y - halfSize, width: size, height: halfSize };
-        }
+        case 0: return new Rect(x, y, 0.5, 1.0);
+        case 1: return new Rect(x, y, 1.0, 0.5);
+        case 2: return new Rect(x - 0.5, y, 0.5, 1.0);
+        case 3: return new Rect(x, y - 0.5, 1.0, 0.5);
         default: {
             throw new Error(`Side index should be between 0 and 3, found ${side}`)
         }
