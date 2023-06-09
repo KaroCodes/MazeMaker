@@ -160,36 +160,26 @@ function getCornerPath(
         return;
     }
 
-    const shape = CORNER_SHAPE.clone();;
+    const shape = CORNER_SHAPE.clone();
 
-    if (x === 0 && y === 0 && side !== 0) {
-        shape.flipX().rotate(90);
-    }
-    if (x === 0 && y === last - 1) {
-        shape.flipX().rotate(180)
-    }
-    if (x === 0 && y === last) {
-        shape.rotate(90)
-    }
-    if (x === last - 1 && y === 0) {
-        shape.rotate(270)
-    }
-    if (x === last && y === 0) {
+    if (x === last && y === 0) { // last
         shape.flipX()
     }
-    if (x === last - 1 && y === last) {
-        shape.flipX().rotate(270)
+    if (x === 0 && y === 0 && side !== 0) { // 0
+        shape.flipX()
     }
-    if (x === last && y === last - 1) {
-        shape.rotate(180)
+    if (x === 0 && y === last - 1) { // last - 1
+        shape.flipX()
+    }
+    if (x === last - 1 && y === last) { // last * 2 - 1
+        shape.flipX()
     }
 
-    if (x >= last - 1) {
-        shape?.translateX(last);
-    }
-    if (y >= last - 1) {
-        shape?.translateY(last);
-    }
+    if (x === 0 && side !== 0) shape.rotate(90);
+    if (y === last - 1) shape.rotate(180);
+    if (x === last - 1) shape.rotate(270);
+    if (x >= last - 1) shape.translateX(last);
+    if (y >= last - 1) shape.translateY(last);
 
     if (!shape) {
         return;
