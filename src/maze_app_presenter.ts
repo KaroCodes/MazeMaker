@@ -2,26 +2,44 @@ import { EditableMazePresenter, EditableMazePresenterFactory } from "./editable_
 import { MazeGenerator } from "./util/maze_generator";
 import { Maze } from "./util/models";
 
-const DEFAULT_SEED = 1;
+const DEFAULT_ID = 1;
 const DEFAULT_SIZE = 9;
 
 export class MazeAppPresenter {
 
-    readonly defaultMaze: Maze;
+    private maze: Maze;
 
     constructor(
         private readonly mazeGenerator: MazeGenerator,
         private readonly editableMazePresenterFactory: EditableMazePresenterFactory,
     ) {
-        this.defaultMaze = mazeGenerator.generate({
-            seed: DEFAULT_SEED,
-            size: DEFAULT_SIZE,
-        });
+        this.maze = this.generateMaze({ id: DEFAULT_ID });
+    }
+
+    getMaze(): Maze {
+        return this.maze;
     }
 
     getRandomMaze({ size }: { size?: number } = {}): Maze {
+        this.maze = this.generateMaze({ id: Math.random(), size });
+        return this.maze;
+    }
+
+    getPreviousMaze(): Maze {
+        const id = this.maze.id - 1;
+        this.maze = this.generateMaze({ id });
+        return this.maze;
+    }
+
+    getNextMaze(): Maze {
+        const id = this.maze.id + 1;
+        this.maze = this.generateMaze({ id });
+        return this.maze;
+    }
+
+    private generateMaze({ id, size }: { id: number, size?: number }): Maze {
         return this.mazeGenerator.generate({
-            seed: Math.random(),
+            seed: id,
             size: size || DEFAULT_SIZE,
         });
     }

@@ -26,13 +26,26 @@ body {
     text-align: center;
 }
 
+button {
+    margin: 16px 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     width: 500px;
 }
 
-button {
-    margin: 16px 0;
-    padding: 8px 0;
+.mazeControls {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.mazePicker {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }

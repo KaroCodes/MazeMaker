@@ -9,9 +9,8 @@ type EditableMazeProps = {
 
 export function EditableMaze({ presenter }: EditableMazeProps) {
     const { maze } = presenter;
-    // const fill = '#111';
     const lineWidth = 3;
-    let lineColor = 'white';
+    const lineColor = 'white';
     const cellSize = 64;
     const mazeSize = maze.size * cellSize;
 

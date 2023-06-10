@@ -61,7 +61,7 @@ export class MazeGenerator {
             current = next;
         }
 
-        return { cells, size };
+        return { id: seed, cells, size };
     }
 
     // Generates a grid [size x size] with each cell surrounded by walls.
