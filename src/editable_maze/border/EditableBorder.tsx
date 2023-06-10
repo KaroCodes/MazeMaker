@@ -1,21 +1,20 @@
-import * as _ from 'lodash';
 import { useCallback, useState } from "react";
-import { Cell } from "../../util/models";
 import { Point } from '../../geometry/point';
-import { Shape } from '../../geometry/shape';
 import { Rect } from '../../geometry/rect';
+import { Shape } from '../../geometry/shape';
+import { Cell } from "../../util/models";
+import './EditableBorder.css';
 
-const BACKGROUND_COLOR = 'red';//'#111';
+const BACKGROUND_COLOR = '#111';
 
 /**
-
  * This shape exists in Cartesian coordinate system not in SVG/Canvas space,
  * meaning: (0, 0) is the "center" of our plane while for SVG (0, 0) is the
  * left-top corner.
  * The shape appears like this in svg space:
  * ◣
  * ■
- * and upside flipped upside down in cartesian coords (described below).
+ * and flipped upside down in cartesian coords (described below).
  */
 const CORNER_SHAPE = new Shape([
     new Point(0.0, 0.0),
@@ -86,7 +85,7 @@ export function EditableBorder({
     };
 
     return (
-        <g onClick={onClick}>
+        <g className={open ? 'exit' : 'border'} onClick={onClick}>
             <Background />
             <Border />
         </g>

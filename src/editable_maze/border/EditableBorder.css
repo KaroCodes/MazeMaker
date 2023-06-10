@@ -1,11 +1,10 @@
 .border:hover > * {
     stroke: transparent;
-    fill: transparent;
+    fill: red;
     cursor: pointer;
 }
 
 .exit:hover > * {
-    stroke: transparent;
-    fill: red;
+    fill: green;
     cursor: pointer;
 }

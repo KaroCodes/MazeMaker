@@ -1,5 +1,4 @@
-import './EditableMaze.css';
-import { EditableBorder } from './border/editable_border';
+import { EditableBorder } from './border/EditableBorder';
 import { EditableMazePresenter } from './editable_maze_presenter';
 
 const XMLNS = "http://www.w3.org/2000/svg";
@@ -21,7 +20,6 @@ export function EditableMaze({ presenter }: EditableMazeProps) {
     ).join(' ');
 
     const borderCells = presenter.getBorderCells();
-    console.log(borderCells)
 
     return (
         <div>
