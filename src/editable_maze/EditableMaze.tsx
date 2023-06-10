@@ -1,40 +1,45 @@
 import { EditableBorder } from './border/EditableBorder';
 import { EditableMazePresenter } from './editable_maze_presenter';
 
-const XMLNS = "http://www.w3.org/2000/svg";
-
 type EditableMazeProps = {
     presenter: EditableMazePresenter,
+    editing: boolean,
 }
 
-export function EditableMaze({ presenter }: EditableMazeProps) {
+export function EditableMaze({ presenter, editing }: EditableMazeProps) {
     const { maze } = presenter;
-    const lineWidth = 3;
+    const strokeWidth = 3;
     const lineColor = 'white';
     const cellSize = 64;
     const mazeSize = maze.size * cellSize;
 
-    const innerWallsPaths = presenter.innerWalls.map(cmd =>
-        `${cmd.type}${cmd.x * cellSize} ${cmd.y * cellSize}`
-    ).join(' ');
+    const Path = ({ d }: { d: string }) => (
+        <path d={d} stroke={lineColor} strokeWidth={strokeWidth}
+            fill='none' strokeLinejoin='miter' />
+    );
 
-    const borderCells = presenter.getBorderCells();
+    const EditableBorders = () => (
+        <>
+            {presenter.getEditableBorderPresenters().map((presenter) => (
+                <EditableBorder presenter={presenter} scale={cellSize}
+                    strokeWidth={strokeWidth} />
+            ))}
+        </>
+    );
+
+    const Border = () => {
+        return editing
+            ? <EditableBorders />
+            : <Path d={presenter.getOuterWallsPath(cellSize)} />
+    };
 
     return (
         <div>
-            <svg xmlns={XMLNS} viewBox={`0 0 ${mazeSize} ${mazeSize}`}>
-
-                {borderCells.flatMap((cells, side) => cells.map((cell, idx) => (
-                    <EditableBorder key={`${side}_${idx}`} cell={cell}
-                        cellSize={cellSize} side={side} mazeSize={maze.size} />
-                )))}
-                <path
-                    d={innerWallsPaths}
-                    stroke={lineColor}
-                    strokeWidth={lineWidth}
-                    fill='none'
-                    strokeLinejoin='miter'
-                />
+            <svg xmlns='http://www.w3.org/2000/svg'
+                viewBox={`${- strokeWidth / 2} ${- strokeWidth / 2} \
+                ${mazeSize + strokeWidth} ${mazeSize + strokeWidth}`}>
+                <Border />
+                <Path d={presenter.getInnerWallsPath(cellSize)} />
             </svg>
         </div>
     )

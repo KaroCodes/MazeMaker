@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import MazeApp, { MazeAppProps } from './MazeApp.tsx';
-import { MazeGenerator } from './util/maze_generator.ts';
+import { MazeGenerator } from './maze/maze_generator.ts';
 import { MazeAppPresenter } from './maze_app_presenter.ts';
 import seedrandom from "seedrandom";
 import { EditableMazePresenterFactory } from './editable_maze/editable_maze_presenter.ts';
-import { MazeConverter } from './util/maze_converter.ts';
+import { MazeConverter } from './maze/maze_converter.ts';
 
 function installDeps(): MazeAppProps {
     const randomIntGenerator = (seed: number) => {

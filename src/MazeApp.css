@@ -30,6 +30,7 @@ button {
     margin: 16px 4px;
     padding: 8px 16px;
     cursor: pointer;
+    line-height: 150%;
 }
 
 .container {
@@ -42,6 +43,10 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: end;
+}
+
+.mazeControls > button {
+    width: 100px;
 }
 
 .mazePicker {

@@ -1,4 +1,5 @@
-import { Cell, Maze } from "./models";
+import { Cell, Maze } from "./maze";
+
 
 type BuildingCell = Cell & { visisted: boolean }
 
@@ -61,7 +62,7 @@ export class MazeGenerator {
             current = next;
         }
 
-        return { id: seed, cells, size };
+        return new Maze(seed, size, cells);
     }
 
     // Generates a grid [size x size] with each cell surrounded by walls.

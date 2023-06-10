@@ -2,7 +2,6 @@ import { useState } from 'react';
 import './MazeApp.css';
 import EditableMaze from './editable_maze/EditableMaze';
 import { MazeAppPresenter } from './maze_app_presenter';
-import { Maze } from './util/models';
 
 export type MazeAppProps = {
     presenter: MazeAppPresenter,
@@ -10,14 +9,16 @@ export type MazeAppProps = {
 
 function MazeApp({ presenter }: MazeAppProps) {
 
-    const [maze, setMaze] = useState<Maze>(presenter.getMaze());
+    const [maze, setMaze] = useState(presenter.getMaze());
+    const [editing, setEditing] = useState(false);
 
     return (
         <div className='container'>
             <div className='mazeControls'>
-                <button onClick={() => { }}>Edit exits</button>
+                <button onClick={() => setEditing(!editing)}>
+                    {editing ? 'Done ✓' : 'Edit exits'}</button>
             </div>
-            <EditableMaze presenter={presenter.getEditablePresenter(maze)} />
+            <EditableMaze presenter={presenter.getEditablePresenter(maze)} editing={editing} />
             <div className='mazePicker'>
                 <button onClick={() => setMaze(presenter.getPreviousMaze())}>
                     &#8678;

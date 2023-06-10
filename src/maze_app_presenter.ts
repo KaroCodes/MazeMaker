@@ -1,6 +1,6 @@
 import { EditableMazePresenter, EditableMazePresenterFactory } from "./editable_maze/editable_maze_presenter";
-import { MazeGenerator } from "./util/maze_generator";
-import { Maze } from "./util/models";
+import { Maze } from "./maze/maze";
+import { MazeGenerator } from "./maze/maze_generator";
 
 const DEFAULT_ID = 1;
 const DEFAULT_SIZE = 9;

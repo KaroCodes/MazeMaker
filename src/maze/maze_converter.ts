@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
 import { Point } from '../geometry/point';
-import { Cell, Command, Maze } from "./models";
+import { Command } from "../util/command";
+import { Cell, Maze } from './maze';
 
 type Node = {
     p: Point,
@@ -28,7 +28,7 @@ export class MazeConverter {
 
         // remove outer walls from the copy of the maze so they don't interfere with
         // tree creation (trees should only contain inner walls).
-        const edgelessMaze = copyWithoutEdges(maze);
+        const edgelessMaze = maze.clone().removeOuterWalls();
 
         // roots are any walls growing directly from maze's edges
         const roots = getRoots(edgelessMaze);
@@ -47,27 +47,30 @@ export class MazeConverter {
 
         return commands;
     }
-}
 
-function copyWithoutEdges(maze: Maze): Maze {
-    const edgelessMaze: Maze = _.cloneDeep(maze);
+    toOuterWalls(maze: Maze): Command[] {
+        const lines: Line[] = [];
+        const borderCells = maze.getBorderCells();
 
-    edgelessMaze.cells.forEach(row => {
-        row.forEach(cell => {
-            if (cell.x === 0) {
-                cell.walls[0] = false;
-            } else if (cell.x === edgelessMaze.size - 1) {
-                cell.walls[2] = false;
+        borderCells.flatMap((cells, side) => cells.map(cell => {
+            if (cell.walls[side]) {
+                // added starting coords to shift the bottom and right border
+                const modifier = Math.floor(side / 2);
+                // 1 when current side is horizontal, 0 otherwise
+                const isHorizontal = side % 2;
+                // 1 when current side is vertical, 0 otherwise
+                const isVertical = 1 - isHorizontal;
+                const x = cell.x + modifier * isVertical;
+                const y = cell.y + modifier * isHorizontal;
+                lines.push({
+                    src: new Point(x, y),
+                    dst: new Point(x + isHorizontal, y + isVertical),
+                });
             }
-            if (cell.y === 0) {
-                cell.walls[1] = false;
-            } else if (cell.y === edgelessMaze.size - 1) {
-                cell.walls[3] = false;
-            }
-        })
-    });
+        }));
 
-    return edgelessMaze;
+        return linesToCommands(removeMidpoints(lines));
+    }
 }
 
 function getRoots(maze: Maze): Point[] {

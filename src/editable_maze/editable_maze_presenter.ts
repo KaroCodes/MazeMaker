@@ -1,5 +1,7 @@
-import { MazeConverter } from "../util/maze_converter";
-import { Cell, Command, Maze } from "../util/models";
+import { Maze } from "../maze/maze";
+import { MazeConverter } from "../maze/maze_converter";
+import { Command, commandsToPath } from "../util/command";
+import { EditableBorderPresenter } from "./border/editable_border_presenter";
 
 export class EditableMazePresenterFactory {
 
@@ -13,23 +15,32 @@ export class EditableMazePresenterFactory {
 
 export class EditableMazePresenter {
 
-    readonly innerWalls: Command[];
+    private readonly innerWalls: Command[];
 
     constructor(
         readonly maze: Maze,
-        mazeConverter: MazeConverter
+        private readonly mazeConverter: MazeConverter
     ) {
         this.innerWalls = mazeConverter.toInnerWalls(maze);
     }
 
-    getBorderCells(): Cell[][] {
-        const cells = this.maze.cells;
-        return [
-            cells.flatMap(row => row.filter(cell => cell.x === 0)), // left
-            cells[0], // top
-            cells.flatMap(row => row.filter(cell => cell.x === cells.length - 1)), // right
-            cells[cells.length - 1], // bottom
-        ]
+    getInnerWallsPath(scale: number): string {
+        return commandsToPath(this.innerWalls, scale);
     }
 
+    getOuterWallsPath(scale: number): string {
+        const outerWalls = this.mazeConverter.toOuterWalls(this.maze);
+        return commandsToPath(outerWalls, scale);
+    }
+
+    getEditableBorderPresenters(): EditableBorderPresenter[] {
+        const borderCells = this.maze.getBorderCells();
+        return borderCells.flatMap((cells, side) => cells.map((cell, idx) =>
+            new EditableBorderPresenter(
+                `${side}_${idx}`, // key
+                cell,
+                side,
+                this.maze.size,
+            )));
+    }
 }
