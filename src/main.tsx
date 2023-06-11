@@ -3,19 +3,17 @@ import ReactDOM from 'react-dom/client';
 import MazeApp, { MazeAppProps } from './MazeApp.tsx';
 import { MazeGenerator } from './maze/maze_generator.ts';
 import { MazeAppPresenter } from './maze_app_presenter.ts';
-import seedrandom from "seedrandom";
 import { EditableMazePresenterFactory } from './editable_maze/editable_maze_presenter.ts';
 import { MazeConverter } from './maze/maze_converter.ts';
+import { seedableRandomIntGenerator } from './util/random.ts';
 
 function installDeps(): MazeAppProps {
-    const randomIntGenerator = (seed: number) => {
-        const srnd = seedrandom(`${seed}`);
-        return (min: number, max: number) => Math.floor(srnd() * (max - min) + min);
-    }
-    const mazeGenerator = new MazeGenerator(randomIntGenerator);
-    const editableMazePresenterFactory = new EditableMazePresenterFactory(new MazeConverter());
+    const mazeGenerator = new MazeGenerator(seedableRandomIntGenerator);
+    const mazeConverter = new MazeConverter();
+    const editableMazePresenterFactory = new EditableMazePresenterFactory(mazeConverter);
     const presenter = new MazeAppPresenter(
         mazeGenerator,
+        mazeConverter,
         editableMazePresenterFactory,
     );
     return { presenter }

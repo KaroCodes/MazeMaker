@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import './MazeApp.css';
 import EditableMaze from './editable_maze/EditableMaze';
 import { MazeAppPresenter } from './maze_app_presenter';
@@ -14,22 +14,44 @@ function MazeApp({ presenter }: MazeAppProps) {
 
     return (
         <div className='container'>
-            <div className='mazeControls'>
-                <button onClick={() => setEditing(!editing)}>
-                    {editing ? 'Done ✓' : 'Edit exits'}</button>
-            </div>
-            <EditableMaze presenter={presenter.getEditablePresenter(maze)} editing={editing} />
-            <div className='mazePicker'>
-                <button onClick={() => setMaze(presenter.getPreviousMaze())}>
-                    &#8678;
-                </button>
+
+            <div className='controls'>
                 <button onClick={() => setMaze(presenter.getRandomMaze())}>
                     Get random maze
                 </button>
-                <button onClick={() => setMaze(presenter.getNextMaze())}>
-                    &#8680;
+                <button onClick={() => setEditing(!editing)}>
+                    {editing ? 'Done ✓' : 'Edit exits'}
                 </button>
             </div>
+
+            <EditableMaze presenter={presenter.getEditablePresenter(maze)} editing={editing} />
+
+            <div className='controls'>
+                <div className='picker'>
+                    <button onClick={() => setMaze(presenter.getPreviousMaze())}>
+                        &#8678;
+                    </button>
+                    <span>ID: {maze.id}</span>
+                    <button onClick={() => setMaze(presenter.getNextMaze())}>
+                        &#8680;
+                    </button>
+                </div>
+                <div className='picker'>
+                    <button onClick={() => setMaze(presenter.sizeDown())}
+                        disabled={!presenter.canSizeDown()}>
+                        &#8681;
+                    </button>
+                    <span className='size'>Size: {maze.size}</span>
+                    <button onClick={() => setMaze(presenter.sizeUp())}
+                        disabled={!presenter.canSizeUp()}>
+                        &#8679;
+                    </button>
+                </div>
+            </div>
+
+            <button onClick={() => presenter.download()}>
+                Download SVG
+            </button>
         </div>
     )
 }

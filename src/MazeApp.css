@@ -27,7 +27,6 @@ body {
 }
 
 button {
-    margin: 16px 4px;
     padding: 8px 16px;
     cursor: pointer;
     line-height: 150%;
@@ -39,17 +38,14 @@ button {
     width: 500px;
 }
 
-.mazeControls {
+.controls {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
+    padding: 16px 0;
 }
 
-.mazeControls > button {
-    width: 100px;
-}
-
-.mazePicker {
+.picker {
     display: flex;
     flex-direction: row;
     justify-content: center;

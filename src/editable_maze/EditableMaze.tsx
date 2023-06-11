@@ -15,14 +15,14 @@ export function EditableMaze({ presenter, editing }: EditableMazeProps) {
 
     const Path = ({ d }: { d: string }) => (
         <path d={d} stroke={lineColor} strokeWidth={strokeWidth}
-            fill='none' strokeLinejoin='miter' />
+            fill='none' strokeLinecap='square' strokeLinejoin='miter' />
     );
 
     const EditableBorders = () => (
         <>
             {presenter.getEditableBorderPresenters().map((presenter) => (
                 <EditableBorder presenter={presenter} scale={cellSize}
-                    strokeWidth={strokeWidth} />
+                    strokeWidth={strokeWidth} key={presenter.key} />
             ))}
         </>
     );
