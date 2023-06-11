@@ -31,7 +31,7 @@ function MazeApp({ presenter }: MazeAppProps) {
                     <button onClick={() => setMaze(presenter.getPreviousMaze())}>
                         &#8678;
                     </button>
-                    <span>ID: {maze.id}</span>
+                    <span>Id: {maze.id}</span>
                     <button onClick={() => setMaze(presenter.getNextMaze())}>
                         &#8680;
                     </button>
@@ -41,7 +41,7 @@ function MazeApp({ presenter }: MazeAppProps) {
                         disabled={!presenter.canSizeDown()}>
                         &#8681;
                     </button>
-                    <span className='size'>Size: {maze.size}</span>
+                    <span>Size: {maze.size}</span>
                     <button onClick={() => setMaze(presenter.sizeUp())}
                         disabled={!presenter.canSizeUp()}>
                         &#8679;

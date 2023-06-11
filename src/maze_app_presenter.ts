@@ -36,6 +36,7 @@ export class MazeAppPresenter {
     getRandomMaze(): Maze {
         const id = randomInt(MIN_ID, MAX_ID);
         const size = randomInt(MIN_SIZE, MAX_SIZE);
+        console.log(size)
         this.maze = this.generateMaze({ id, size });
         return this.maze;
     }

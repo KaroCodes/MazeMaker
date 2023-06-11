@@ -50,3 +50,11 @@ button {
     flex-direction: row;
     justify-content: center;
 }
+
+span {
+    margin: 0 8px;
+    border-radius: 4px;
+    padding: 8px;
+    border: 2px solid #777;
+    width: 80px;
+}
