@@ -1,10 +1,11 @@
-.border:hover > * {
+.wall:hover > * {
     stroke: transparent;
-    fill: red;
     cursor: pointer;
+    fill: var(--colorNegative);
 }
 
 .exit:hover > * {
-    fill: green;
+    stroke: transparent;
     cursor: pointer;
+    fill: var(--colorPositive);
 }

@@ -1,11 +1,27 @@
 body {
+    --colorBackground: #111;
+    --colorLighter: #444;
+    --colorDarker: #010101;
+
+    --colorPrimary: hsl(264.12, 100%, 61.96%);
+    --colorPrimaryHover: hsl(264.12, 100%, 67%);
+
+    --textColorPrimary: #fff;
+    --textColorSecondary: #ccc;
+
+    --colorPositive: hsl(124.22, 100%, 25.1%);
+    --colorNegative: hsl(349.75, 83.26%, 46.86%);
+
+    --colorButton: var(--colorLighter);
+    --colorButtonHover: #555;
+
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    color: var(--textColorSecondary);
+    background-color: var(--colorBackground);
   
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -16,45 +32,89 @@ body {
     margin: 0;
     display: flex;
     place-items: center;
-    min-width: 320px;
     min-height: 100vh;
 }
 
 #root {
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    width: 100%;
     padding: 8px;
-    text-align: center;
+}
+
+h1, h2, h3, h4 {
+    margin-top: 32px;
+    color: var(--textColorPrimary);
 }
 
 button {
     padding: 8px 16px;
-    cursor: pointer;
+    min-width: 48px;
     line-height: 150%;
+    background-color: var(--colorLighter);
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover:enabled {
+    background-color: #555;
+}
+
+button.primary {
+    background-color: var(--colorPrimary);
+}
+
+button.primary:hover:enabled {
+    background-color: var(--colorPrimaryHover);
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    width: 500px;
+    width: 512px;
 }
 
 .controls {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
     padding: 16px 0;
 }
 
 .picker {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
-span {
-    margin: 0 8px;
+@media (max-width : 527px) {
+    .container {
+        width: 100%;
+    }
+}
+
+input {
+    border: 1px solid var(--colorLighter);
     border-radius: 4px;
-    padding: 8px;
-    border: 2px solid #777;
-    width: 80px;
+    background: var(--colorDarker);
+
+    &:active, &:focus {
+        outline: none;
+        border-color: var(--colorPrimary);
+
+    }
+}
+
+/* Hide default input controls from number picker */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
 }

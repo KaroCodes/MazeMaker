@@ -4,17 +4,21 @@ import { EditableMazePresenter } from './editable_maze_presenter';
 type EditableMazeProps = {
     presenter: EditableMazePresenter,
     editing: boolean,
+    wallThickness: number,
 }
 
-export function EditableMaze({ presenter, editing }: EditableMazeProps) {
+export function EditableMaze({
+    presenter,
+    editing,
+    wallThickness,
+}: EditableMazeProps) {
     const { maze } = presenter;
-    const strokeWidth = 3;
     const lineColor = 'white';
     const cellSize = 64;
     const mazeSize = maze.size * cellSize;
 
     const Path = ({ d }: { d: string }) => (
-        <path d={d} stroke={lineColor} strokeWidth={strokeWidth}
+        <path d={d} stroke={lineColor} strokeWidth={wallThickness}
             fill='none' strokeLinecap='square' strokeLinejoin='miter' />
     );
 
@@ -22,7 +26,7 @@ export function EditableMaze({ presenter, editing }: EditableMazeProps) {
         <>
             {presenter.getEditableBorderPresenters().map((presenter) => (
                 <EditableBorder presenter={presenter} scale={cellSize}
-                    strokeWidth={strokeWidth} key={presenter.key} />
+                    strokeWidth={wallThickness} key={presenter.key} />
             ))}
         </>
     );
@@ -33,11 +37,12 @@ export function EditableMaze({ presenter, editing }: EditableMazeProps) {
             : <Path d={presenter.getOuterWallsPath(cellSize)} />
     };
 
+    const offset = - wallThickness / 2;
+    const size = mazeSize + wallThickness;
     return (
         <div>
             <svg xmlns='http://www.w3.org/2000/svg'
-                viewBox={`${- strokeWidth / 2} ${- strokeWidth / 2} \
-                ${mazeSize + strokeWidth} ${mazeSize + strokeWidth}`}>
+                viewBox={`${offset} ${offset} ${size} ${size}`}>
                 <Border />
                 <Path d={presenter.getInnerWallsPath(cellSize)} />
             </svg>

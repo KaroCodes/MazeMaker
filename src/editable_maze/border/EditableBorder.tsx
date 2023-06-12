@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import './EditableBorder.css';
 import { EditableBorderPresenter } from "./editable_border_presenter";
 
-const BACKGROUND_COLOR = '#111';
+const BACKGROUND_COLOR = 'hsl(264.12, 100%, 61.96%)';
 
 type EditableBorderProps = {
     presenter: EditableBorderPresenter,
@@ -50,12 +50,13 @@ export function EditableBorder({
                 stroke='white'
                 strokeLinejoin='miter'
                 strokeWidth={strokeWidth}
+                strokeLinecap='square'
             />
         )
     };
 
     return (
-        <g className={open ? 'exit' : 'border'} onClick={onClick}>
+        <g className={`border ${open ? 'exit' : 'wall'}`} onClick={onClick}>
             <Background />
             <BorderWall />
         </g>
