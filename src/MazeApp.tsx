@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import './MazeApp.css';
 import EditableMaze from './editable_maze/EditableMaze';
-import { DEFAULT_ID, DEFAULT_SIZE, DEFAULT_THICKNESS, MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
+import { CELL_SIZE, DEFAULT_ID, DEFAULT_SIZE, DEFAULT_THICKNESS, MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
 import { Slider } from './ui/slider/Slider';
 import { NumericInput } from './ui/numericinput/NumericInput';
 import { randomInt } from './util/random';
+
+type WallStyle = 'square' | 'round';
 
 export type MazeAppProps = {
     presenter: MazeAppPresenter,
@@ -18,6 +20,7 @@ function MazeApp({ presenter }: MazeAppProps) {
     const [id, setId] = useState(DEFAULT_ID);
     const [size, setSize] = useState(DEFAULT_SIZE);
     const [wallThickness, setWallThickness] = useState(DEFAULT_THICKNESS);
+    const [wallStyle, setWallStyle] = useState<WallStyle>('square');
 
     useEffect(() => {
         setMaze(presenter.getMaze({ id, size }));
@@ -27,7 +30,7 @@ function MazeApp({ presenter }: MazeAppProps) {
         <div className='container'>
 
             <EditableMaze presenter={presenter.getEditablePresenter(maze)}
-                editing={editing} wallThickness={wallThickness} />
+                editing={editing} cellSize={CELL_SIZE} wallThickness={wallThickness} />
 
             <div className='controls'>
 

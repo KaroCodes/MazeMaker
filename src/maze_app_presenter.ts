@@ -18,8 +18,7 @@ export const DEFAULT_ID = MIN_ID;
 export const DEFAULT_SIZE = 9;
 export const DEFAULT_THICKNESS = 3;
 
-
-const CELL_SIZE = 64;
+export const CELL_SIZE = 64;
 
 
 export class MazeAppPresenter {
