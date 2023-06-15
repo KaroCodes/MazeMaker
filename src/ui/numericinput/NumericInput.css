@@ -1,0 +1,31 @@
+input {
+    width: 48px;
+    text-align: center;
+    border: 1px solid var(--colorLighter);
+    border-radius: 4px;
+    background: var(--colorDarker);
+
+    &:active, &:focus {
+        outline: none;
+        border-color: var(--colorPrimary);
+
+    }
+}
+
+/* Hide default input controls from number picker */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.invalid, .invalid:active, .invalid:focus {
+    border-color: var(--colorNegative);
+}

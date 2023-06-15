@@ -14,8 +14,12 @@ export const MAX_SIZE = 40;
 export const MIN_THICKNESS = 1;
 export const MAX_THICKNESS = 30;
 
-const DEFAULT_ID = MIN_ID;
-const DEFAULT_SIZE = 9;
+
+export const DEFAULT_ID = MIN_ID;
+export const DEFAULT_SIZE = 9;
+export const DEFAULT_THICKNESS = 3;
+
+
 const CELL_SIZE = 64;
 
 

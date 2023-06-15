@@ -43,8 +43,8 @@ body {
 }
 
 h1, h2, h3, h4 {
-    margin-top: 32px;
     color: var(--textColorPrimary);
+    line-height: 50%;
 }
 
 button {
@@ -87,34 +87,15 @@ button.primary:hover:enabled {
     justify-content: flex-start;
 }
 
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 32px 0 16px 0;
+}
+
 @media (max-width : 527px) {
     .container {
         width: 100%;
     }
-}
-
-input {
-    border: 1px solid var(--colorLighter);
-    border-radius: 4px;
-    background: var(--colorDarker);
-
-    &:active, &:focus {
-        outline: none;
-        border-color: var(--colorPrimary);
-
-    }
-}
-
-/* Hide default input controls from number picker */
-
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
 }

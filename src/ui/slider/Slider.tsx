@@ -2,28 +2,27 @@ import './Slider.css';
 
 type SliderProps = {
     onChange: (value: number) => void,
-    minValue: number,
-    maxValue: number,
-    defaultValue?: number,
+    min: number,
+    max: number,
+    value?: number,
 }
 
 export function Slider({
     onChange,
-    minValue,
-    maxValue,
-    defaultValue,
+    min,
+    max,
+    value,
 }: SliderProps) {
     return (
         <div className='slider-container'>
-            <span>{minValue}</span>
+            <span>{min}</span>
             <input className='slider' type='range'
-                min={minValue} max={maxValue}
-                defaultValue={defaultValue}
+                min={min} max={max} value={value}
                 onChange={(e) => {
                     const value = Number(e.target.value);
                     onChange(value);
                 }} />
-            <span>{maxValue}</span>
+            <span>{max}</span>
         </div>
     );
 }

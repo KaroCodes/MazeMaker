@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './MazeApp.css';
 import EditableMaze from './editable_maze/EditableMaze';
-import { MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
+import { DEFAULT_ID, DEFAULT_SIZE, DEFAULT_THICKNESS, MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
 import { Slider } from './ui/slider/Slider';
+import { NumericInput } from './ui/numericinput/NumericInput';
 
 export type MazeAppProps = {
     presenter: MazeAppPresenter,
@@ -12,7 +13,14 @@ function MazeApp({ presenter }: MazeAppProps) {
 
     const [maze, setMaze] = useState(presenter.getMaze());
     const [editing, setEditing] = useState(false);
-    const [wallThickness, setWallThickness] = useState(3);
+
+    const [id, setId] = useState(DEFAULT_ID);
+    const [size, setSize] = useState(DEFAULT_SIZE);
+    const [wallThickness, setWallThickness] = useState(DEFAULT_THICKNESS);
+
+    useEffect(() => {
+        setMaze(presenter.getMaze({ id, size }));
+    }, [id, size]);
 
     return (
         <div className='container'>
@@ -27,7 +35,9 @@ function MazeApp({ presenter }: MazeAppProps) {
                     {editing ? 'Done ✓' : 'Edit exits'}
                 </button>
 
-                <h3>Maze ID</h3>
+                {/* <div className='header'>
+                    <h3>Maze ID</h3>
+                </div>
                 <div className='picker'>
                     <button onClick={() => setMaze(presenter.getPreviousMaze())}
                         disabled={!presenter.canGetPreviousMaze()}>
@@ -47,25 +57,40 @@ function MazeApp({ presenter }: MazeAppProps) {
                     <button onClick={() => setMaze(presenter.getRandomMaze())}>
                         Random
                     </button>
+                </div> */}
+
+
+                <div className='header'>
+                    <h3>Size</h3>
+                    <NumericInput
+                        min={MIN_SIZE}
+                        max={MAX_SIZE}
+                        value={size}
+                        onChange={setSize} />
                 </div>
-
-                <h3>Size</h3>
                 <Slider
-                    minValue={MIN_SIZE}
-                    maxValue={MAX_SIZE}
-                    defaultValue={maze.size}
-                    onChange={(size) => setMaze(presenter.getMaze({ size }))}
-                />
+                    min={MIN_SIZE}
+                    max={MAX_SIZE}
+                    value={size}
+                    onChange={setSize} />
 
-                <h3>Wall thickness</h3>
+                <div className='header'>
+                    <h3>Wall thickness</h3>
+                    <NumericInput
+                        min={MIN_THICKNESS}
+                        max={MAX_THICKNESS}
+                        value={wallThickness}
+                        onChange={setWallThickness} />
+                </div>
                 <Slider
-                    minValue={MIN_THICKNESS}
-                    maxValue={MAX_THICKNESS}
-                    defaultValue={wallThickness}
-                    onChange={(thickness) => setWallThickness(thickness)}
-                />
+                    min={MIN_THICKNESS}
+                    max={MAX_THICKNESS}
+                    value={wallThickness}
+                    onChange={setWallThickness} />
 
-                <h3>Wall style</h3>
+                <div className='header'>
+                    <h3>Wall style</h3>
+                </div>
 
             </div>
 
