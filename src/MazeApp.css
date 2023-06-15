@@ -85,6 +85,7 @@ button.primary:hover:enabled {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    column-gap: 8px;
 }
 
 .header {

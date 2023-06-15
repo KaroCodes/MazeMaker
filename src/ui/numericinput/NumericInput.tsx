@@ -28,6 +28,7 @@ export function NumericInput({
         <input className={isValidInput(Number(value)) ? '' : 'invalid'}
             type='text' value={value} min={min} max={max}
             onChange={(e) => {
+                e.preventDefault();
                 const v = e.target.value;
                 if (isEmptyOrNumber(v)) {
                     setValue(v || '');

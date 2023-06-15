@@ -4,6 +4,7 @@ import EditableMaze from './editable_maze/EditableMaze';
 import { DEFAULT_ID, DEFAULT_SIZE, DEFAULT_THICKNESS, MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
 import { Slider } from './ui/slider/Slider';
 import { NumericInput } from './ui/numericinput/NumericInput';
+import { randomInt } from './util/random';
 
 export type MazeAppProps = {
     presenter: MazeAppPresenter,
@@ -35,30 +36,27 @@ function MazeApp({ presenter }: MazeAppProps) {
                     {editing ? 'Done ✓' : 'Edit exits'}
                 </button>
 
-                {/* <div className='header'>
+                <div className='header'>
                     <h3>Maze ID</h3>
                 </div>
                 <div className='picker'>
-                    <button onClick={() => setMaze(presenter.getPreviousMaze())}
-                        disabled={!presenter.canGetPreviousMaze()}>
+                    <button onClick={() => setId(id - 1)}
+                        disabled={id <= MIN_ID}>
                         &#8678;
                     </button>
-                    <input type='number' value={maze.id}
-                        min={MIN_ID} max={MAX_ID}
-                        onChange={(e) => {
-                            const id = Number(e.target.value) || undefined;
-                            console.log(id)
-                            setMaze(presenter.getMaze({ id }));
-                        }} />
-                    <button onClick={() => setMaze(presenter.getNextMaze())}
-                        disabled={!presenter.canGetNextMaze()}>
+                    <NumericInput
+                        min={MIN_ID}
+                        max={MAX_ID}
+                        value={id}
+                        onChange={setId} />
+                    <button onClick={() => setId(id + 1)}
+                        disabled={id >= MAX_ID}>
                         &#8680;
                     </button>
-                    <button onClick={() => setMaze(presenter.getRandomMaze())}>
+                    <button onClick={() => setId(randomInt(MIN_ID, MAX_ID))}>
                         Random
                     </button>
-                </div> */}
-
+                </div>
 
                 <div className='header'>
                     <h3>Size</h3>

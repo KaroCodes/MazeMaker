@@ -3,7 +3,6 @@ import { Maze } from "./maze/maze";
 import { MazeConverter } from "./maze/maze_converter";
 import { MazeGenerator } from "./maze/maze_generator";
 import { commandsToPath } from "./util/command";
-import { randomInt } from "./util/random";
 
 export const MIN_ID = 1;
 export const MAX_ID = 9999;
@@ -42,54 +41,6 @@ export class MazeAppPresenter {
             seed: id || this.maze.id,
             size: size || this.maze.size,
         });
-    }
-
-    getRandomMaze(): Maze {
-        const id = randomInt(MIN_ID, MAX_ID);
-        this.maze = this.getMaze({ id });
-        return this.maze;
-    }
-
-    canGetPreviousMaze(): boolean {
-        return this.maze.id > MIN_ID;
-    }
-
-    canGetNextMaze(): boolean {
-        return this.maze.id < MAX_ID;
-    }
-
-    getPreviousMaze(): Maze {
-        const id = this.maze.id - 1;
-        this.maze = this.getMaze({ id });
-        return this.maze;
-    }
-
-    getNextMaze(): Maze {
-        const id = this.maze.id + 1;
-        this.maze = this.getMaze({ id });
-        return this.maze;
-    }
-
-    canSizeDown(): boolean {
-        return this.maze.size > MIN_SIZE;
-    }
-
-    canSizeUp(): boolean {
-        return this.maze.size < MAX_SIZE;
-    }
-
-    sizeDown(): Maze {
-        const { id, size: oldSize } = this.maze;
-        const size = Math.max(oldSize - 1, MIN_SIZE);
-        this.maze = this.getMaze({ id, size });
-        return this.maze;
-    }
-
-    sizeUp(): Maze {
-        const { id, size: oldSize } = this.maze;
-        const size = Math.min(oldSize + 1, MAX_SIZE);
-        this.maze = this.getMaze({ id, size });
-        return this.maze;
     }
 
     download(wallThickness: number) {
