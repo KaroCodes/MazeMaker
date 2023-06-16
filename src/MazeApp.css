@@ -39,7 +39,7 @@ body {
     display: flex;
     justify-content: center;
     width: 100%;
-    padding: 8px;
+    padding: 16px;
 }
 
 h1, h2, h3, h4 {
@@ -73,6 +73,7 @@ button.primary:hover:enabled {
     display: flex;
     flex-direction: column;
     width: 512px;
+    margin: 16px 0;
 }
 
 .controls {
