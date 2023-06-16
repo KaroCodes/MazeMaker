@@ -8,6 +8,7 @@ type EditableMazeProps = {
     editing: boolean,
     cellSize: number,
     wallThickness: number,
+    roundWalls: boolean,
 }
 
 export function EditableMaze({
@@ -15,14 +16,17 @@ export function EditableMaze({
     editing,
     cellSize,
     wallThickness,
+    roundWalls,
 }: EditableMazeProps) {
     const { maze } = presenter;
     const mazeSize = maze.size * cellSize;
-    const strokeWidth = editing ? EDITABLE_WALL_THICKNESS : wallThickness
+    const strokeWidth = editing ? EDITABLE_WALL_THICKNESS : wallThickness;
+    const strokeLinecap = !editing && roundWalls ? 'round' : 'square';
+    const strokeLinejoin = !editing && roundWalls ? 'round' : 'miter';
 
     const Path = ({ d }: { d: string }) => (
-        <path d={d} stroke='white' strokeWidth={strokeWidth}
-            strokeLinecap='square' strokeLinejoin='miter' fill='none' />
+        <path d={d} fill='none' stroke='white' strokeWidth={strokeWidth}
+            strokeLinecap={strokeLinecap} strokeLinejoin={strokeLinejoin} />
     );
 
     const EditableBorders = () => (

@@ -23,27 +23,19 @@ export const CELL_SIZE = 64;
 
 export class MazeAppPresenter {
 
-    private maze: Maze;
-
     constructor(
         private readonly mazeGenerator: MazeGenerator,
         private readonly mazeConverter: MazeConverter,
         private readonly editableMazePresenterFactory: EditableMazePresenterFactory,
     ) {
-        this.maze = this.getMaze({ id: DEFAULT_ID, size: DEFAULT_SIZE });
     }
 
-    getMaze(
-        { id, size }: { id?: number, size?: number } = {},
-    ): Maze {
-        return this.mazeGenerator.generate({
-            seed: id || this.maze.id,
-            size: size || this.maze.size,
-        });
+    getMaze(id: number, size: number): Maze {
+        return this.mazeGenerator.generate({ seed: id, size });
     }
 
-    download(wallThickness: number) {
-        const content = this.getSvgContent(wallThickness);
+    download(maze: Maze, wallThickness: number, roundWalls: boolean) {
+        const content = this.getSvgContent(maze, wallThickness, roundWalls);
         this.downloadSVG(content, 'maze.svg');
     }
 
@@ -51,20 +43,24 @@ export class MazeAppPresenter {
         return this.editableMazePresenterFactory.create(maze);
     }
 
-    private getSvgContent(wallThickness: number): string {
+    private getSvgContent(
+        maze: Maze,
+        wallThickness: number,
+        roundWalls: boolean,
+    ): string {
         const offset = - MAX_THICKNESS / 2;
-        const size = this.maze.size * CELL_SIZE + MAX_THICKNESS;
-        const d = this.getMazeAsPath(CELL_SIZE);
+        const size = maze.size * CELL_SIZE + MAX_THICKNESS;
+        const d = this.getMazeAsPath(maze, CELL_SIZE);
 
         return `<svg viewBox="${offset} ${offset} ${size} ${size}" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="white" stroke-width="${wallThickness}" fill="none" stroke-linecap="square" stroke-linejoin="miter" d="${d}" />
+    <path stroke="white" stroke-width="${wallThickness}" fill="none" stroke-linecap="${roundWalls ? 'round' : 'square'}" stroke-linejoin="${roundWalls ? 'round' : 'miter'}" d="${d}" />
 </svg>`;
     }
 
-    private getMazeAsPath(scale: number): string {
-        const innerWalls = this.mazeConverter.toInnerWalls(this.maze);
+    private getMazeAsPath(maze: Maze, scale: number): string {
+        const innerWalls = this.mazeConverter.toInnerWalls(maze);
         const innerWallsPath = commandsToPath(innerWalls, scale);
-        const outerWalls = this.mazeConverter.toOuterWalls(this.maze);
+        const outerWalls = this.mazeConverter.toOuterWalls(maze);
         const outerWallsPath = commandsToPath(outerWalls, scale);
         return `${innerWallsPath} ${outerWallsPath}`;
     }

@@ -2,35 +2,40 @@ import { useEffect, useState } from 'react';
 import './MazeApp.css';
 import EditableMaze from './editable_maze/EditableMaze';
 import { CELL_SIZE, DEFAULT_ID, DEFAULT_SIZE, DEFAULT_THICKNESS, MAX_ID, MAX_SIZE, MAX_THICKNESS, MIN_ID, MIN_SIZE, MIN_THICKNESS, MazeAppPresenter } from './maze_app_presenter';
-import { Slider } from './ui/slider/Slider';
 import { NumericInput } from './ui/numericinput/NumericInput';
+import { Slider } from './ui/slider/Slider';
 import { randomInt } from './util/random';
-
-type WallStyle = 'square' | 'round';
+import { RoundingPicker } from './ui/roundingpicker/RoundingPicker';
 
 export type MazeAppProps = {
     presenter: MazeAppPresenter,
 }
 
+// TODO
+// 1. restrict input to numbers only
+// 4. move into Canva app
+// 5. make video
 function MazeApp({ presenter }: MazeAppProps) {
 
-    const [maze, setMaze] = useState(presenter.getMaze());
     const [editing, setEditing] = useState(false);
 
     const [id, setId] = useState(DEFAULT_ID);
     const [size, setSize] = useState(DEFAULT_SIZE);
     const [wallThickness, setWallThickness] = useState(DEFAULT_THICKNESS);
-    const [wallStyle, setWallStyle] = useState<WallStyle>('square');
+    const [roundWalls, setRoundWalls] = useState(false);
+
+    const [maze, setMaze] = useState(presenter.getMaze(id, size));
 
     useEffect(() => {
-        setMaze(presenter.getMaze({ id, size }));
+        setMaze(presenter.getMaze(id, size));
     }, [id, size]);
 
     return (
         <div className='container'>
 
             <EditableMaze presenter={presenter.getEditablePresenter(maze)}
-                editing={editing} cellSize={CELL_SIZE} wallThickness={wallThickness} />
+                editing={editing} cellSize={CELL_SIZE}
+                wallThickness={wallThickness} roundWalls={roundWalls} />
 
             <div className='controls'>
 
@@ -42,7 +47,7 @@ function MazeApp({ presenter }: MazeAppProps) {
                 <div className='header'>
                     <h3>Maze ID</h3>
                 </div>
-                <div className='picker'>
+                <div className='idPicker'>
                     <button onClick={() => setId(id - 1)}
                         disabled={id <= MIN_ID}>
                         &#8678;
@@ -92,11 +97,14 @@ function MazeApp({ presenter }: MazeAppProps) {
                 <div className='header'>
                     <h3>Wall style</h3>
                 </div>
+                <RoundingPicker
+                    roundWalls={roundWalls}
+                    setRoundWalls={(value) => setRoundWalls(value)} />
 
             </div>
 
-            <button className='primary'
-                onClick={() => presenter.download(wallThickness)}>
+            <button className='download primary'
+                onClick={() => presenter.download(maze, wallThickness, roundWalls)}>
                 Download SVG
             </button>
         </div>

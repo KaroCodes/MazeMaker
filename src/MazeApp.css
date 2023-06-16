@@ -81,18 +81,22 @@ button.primary:hover:enabled {
     padding: 16px 0;
 }
 
-.picker {
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 32px 0 16px 0;
+}
+
+.idPicker {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     column-gap: 8px;
 }
 
-.header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 32px 0 16px 0;
+button.download {
+    margin-top: 32px;
 }
 
 @media (max-width : 527px) {
