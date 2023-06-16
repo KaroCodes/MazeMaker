@@ -21,7 +21,7 @@ export function NumericInput({
         setValue(`${_value}`);
     }, [_value]);
 
-    const isEmptyOrNumber = (v: string) => v === '' || Number(v) !== undefined;
+    const isValidNumericInput = (v: string) => /^(?:0|[1-9]\d*|)$/.test(v);
     const isValidInput = (n?: number) => n && n >= min && n <= max;
 
     return (
@@ -30,8 +30,8 @@ export function NumericInput({
             onChange={(e) => {
                 e.preventDefault();
                 const v = e.target.value;
-                if (isEmptyOrNumber(v)) {
-                    setValue(v || '');
+                if (isValidNumericInput(v)) {
+                    setValue(v);
                 }
                 const n = Number(v);
                 if (isValidInput(n)) {

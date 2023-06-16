@@ -11,10 +11,6 @@ export type MazeAppProps = {
     presenter: MazeAppPresenter,
 }
 
-// TODO
-// 1. restrict input to numbers only
-// 4. move into Canva app
-// 5. make video
 function MazeApp({ presenter }: MazeAppProps) {
 
     const [editing, setEditing] = useState(false);
