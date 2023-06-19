@@ -3,14 +3,14 @@ body {
     --colorLighter: #444;
     --colorDarker: #010101;
 
-    --colorPrimary: hsl(264.12, 100%, 61.96%);
-    --colorPrimaryHover: hsl(264.12, 100%, 67%);
+    --colorPrimary: #8B3DFF;
+    --colorPrimaryHover: #9A57FF;
 
     --textColorPrimary: #fff;
     --textColorSecondary: #ccc;
 
-    --colorPositive: hsl(124.22, 100%, 25.1%);
-    --colorNegative: hsl(349.75, 83.26%, 46.86%);
+    --colorPositive: #008009;
+    --colorNegative: #DB1436;
 
     --colorButton: var(--colorLighter);
     --colorButtonHover: #555;

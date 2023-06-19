@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react";
 import './EditableBorder.css';
 import { EditableBorderPresenter } from "./editable_border_presenter";
-
-const BACKGROUND_COLOR = 'hsl(264.12, 100%, 61.96%)';
+import { COLOR_PRIMARY } from "../../ui/color";
 
 type EditableBorderProps = {
     presenter: EditableBorderPresenter,
@@ -26,7 +25,7 @@ export function EditableBorder({
     const border = presenter.getBorder(scale);
 
     const Background = () => {
-        const fill = open ? 'transparent' : BACKGROUND_COLOR;
+        const fill = open ? 'transparent' : COLOR_PRIMARY;
 
         if (border.background.type === 'RECT') {
             const { x, y, width, height } = border.background.rect;

@@ -2,6 +2,7 @@ import { EditableMazePresenter, EditableMazePresenterFactory } from "./editable_
 import { Maze } from "./maze/maze";
 import { MazeConverter } from "./maze/maze_converter";
 import { MazeGenerator } from "./maze/maze_generator";
+import { COLOR_PRIMARY } from "./ui/color";
 import { commandsToPath } from "./util/command";
 
 export const MIN_ID = 1;
@@ -19,7 +20,6 @@ export const DEFAULT_SIZE = 9;
 export const DEFAULT_THICKNESS = 3;
 
 export const CELL_SIZE = 64;
-
 
 export class MazeAppPresenter {
 
@@ -53,7 +53,7 @@ export class MazeAppPresenter {
         const d = this.getMazeAsPath(maze, CELL_SIZE);
 
         return `<svg viewBox="${offset} ${offset} ${size} ${size}" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="white" stroke-width="${wallThickness}" fill="none" stroke-linecap="${roundWalls ? 'round' : 'square'}" stroke-linejoin="${roundWalls ? 'round' : 'miter'}" d="${d}" />
+    <path stroke="${COLOR_PRIMARY}" stroke-width="${wallThickness}" fill="none" stroke-linecap="${roundWalls ? 'round' : 'square'}" stroke-linejoin="${roundWalls ? 'round' : 'miter'}" d="${d}" />
 </svg>`;
     }
 
